@@ -26,9 +26,16 @@ const SITE_CONFIG = {
   wechatQr: "",
   companyName: "[Ltd 名待補] trading as RNG",
   media: {
-    hero: "",
+    hero: "/images/generated/renaissance-hero.webp",
+    heroSmall: "/images/generated/renaissance-hero-768.webp",
     caseStages: ["", "", "", ""],
     founder: "",
+    process: "/images/generated/process-drawing.webp",
+    processSmall: "/images/generated/process-drawing-720.webp",
+    materials: "/images/generated/material-still-life.webp",
+    materialsSmall: "/images/generated/material-still-life-640.webp",
+    boundaries: "/images/generated/enquiry-materials.webp",
+    boundariesSmall: "/images/generated/enquiry-materials-640.webp",
   },
 };
 
@@ -53,40 +60,40 @@ const COPY = {
     ],
     whatsappShort: "WhatsApp 我",
     hero: {
-      eyebrow: "Leeds 餐飲舖項目拍檔",
-      title: "開舖、旺舖、慳人手——搵個自己開過舖嘅人，一手幫你搞掂。",
-      subtitle: "獨立餐飲老闆嘅項目拍檔｜Leeds 出發・digital 全國",
+      title: "識開舖，先至幫到你。",
+      subtitle: "獨立餐飲老闆嘅實戰拍檔，Leeds 出發，數碼項目全國都做。",
       stats: ["8 週開店", "86% 毛利", "website＋app 自己 build"],
       cta: "WhatsApp 我・免費 30 分鐘上門診斷",
       reassurance: "唔啱做唔會硬 sell",
       proof: "真人・真舖・真數字",
       photoLabel: "M+ 營業中實相",
       photoPending: "真相待補",
+      artAlt: "暖白石灰牆與胡桃木壁龕內的文藝復興風格大理石雕像",
       scroll: "睇我做過嘅真店",
     },
     caseStudy: {
-      eyebrow: "01 · 真店證據",
+      eyebrow: "真店證據",
       title: "唔講概念，睇我自己行過嘅每一步。",
-      body: "呢兩間舖由零到開門係我自己做嘅：搵舖、談 lease、8–9 週裝修、品牌、餐牌、POS、website、app、請人、每個月自己睇 P&L。你間舖嘅每一步，我都行過。",
+      body: "呢兩間舖由零到開門係我自己做嘅：搵舖、談 lease、8-9 週裝修、品牌、餐牌、POS、website、app、請人、每個月自己睇 P&L。你間舖嘅每一步，我都行過。",
       stages: ["空殼", "裝修中", "完工", "營業中"],
       imagePending: "M+ 真相待補",
       note: "相大過字，因為做過比講過更有說服力。",
     },
     process: {
-      eyebrow: "02 · 點樣行",
+      eyebrow: "點樣行",
       title: "每一步講清楚，你隨時知錢用咗去邊。",
       steps: [
         ["01", "睇舖傾偈", "免費，先睇清楚最痛嗰樣。"],
         ["02", "出計劃", "一條 timeline、一份預算、固定費。"],
         ["03", "落地", "按 50 / 30 / 20 分期，唔估鐘。"],
-        ["04", "開張跟數", "30–60–90 日睇營運同數字。"],
+        ["04", "開張跟數", "30-60-90 日睇營運同數字。"],
         ["05", "長期夥伴", "要先再做，唔綁無謂服務。"],
       ],
       responsibility: "工程由合資格承建商承接及負責；我係你嘅單一負責窗口。",
-      report: "每星期你收一頁報告——使咗幾多、去到邊、下週做乜。",
+      report: "每星期你收一頁報告：使咗幾多、去到邊、下週做乜。",
     },
     services: {
-      eyebrow: "03 · 三樣嘢",
+      eyebrow: "三樣嘢",
       title: "由你而家最痛嗰樣開始。",
       intro: "唔使一次過買晒。免費睇舖後，我會先講清楚咩要做、咩可以遲啲。",
       items: [
@@ -112,11 +119,11 @@ const COPY = {
           price: "Setup＋月費",
         },
       ],
-      qualifier: "有真項目、有預算，先約——我哋唔做齋傾。",
+      qualifier: "有真項目、有預算，先約。我哋唔做齋傾。",
       cta: "俾我睇下你間舖",
     },
     about: {
-      eyebrow: "04 · 真人負責",
+      eyebrow: "真人負責",
       title: "我係 Tony。自己落過場，先知老闆最怕漏咩。",
       body: "我自己由零開始做過兩間舖，搵舖、裝修、品牌、餐牌、POS、website、app、請人同每月 P&L 都親手行過。RNG 唔係企喺旁邊俾意見；我會幫你將預算、時間表同每個合作團隊拉返埋一條線，直到間舖開門、營運同數字行順。",
       location: "Leeds 地面・digital 全國",
@@ -124,8 +131,9 @@ const COPY = {
       portraitPending: "真人相待補",
     },
     boundaries: {
-      eyebrow: "05 · 三樣我哋唔做",
+      eyebrow: "三樣我哋唔做",
       title: "信任由界線清楚開始。",
+      artAlt: "暖白石材、深色胡桃木與天然布料的材質組合",
       items: [
         ["唔係承建商", "工程由合資格承建商承接同負責。"],
         ["唔代你決定開唔開", "盤生意係你嘅，我會俾你睇清風險同數字。"],
@@ -133,7 +141,7 @@ const COPY = {
       ],
     },
     faq: {
-      eyebrow: "06 · 常見問題",
+      eyebrow: "常見問題",
       title: "傾之前，先答你最實際嗰四樣。",
       items: [
         ["收幾錢？", "免費上門診斷後報實價，全部 fixed fee 分期，冇時薪冇隱藏收費。"],
@@ -169,7 +177,7 @@ const COPY = {
     },
   },
   en: {
-    pageTitle: "RNG — Open, Upgrade & Automate Your Shop, Leeds",
+    pageTitle: "RNG - Open, Upgrade & Automate Your Shop, Leeds",
     pageDescription: "A hands-on partner for independent hospitality owners opening, upgrading or automating a shop. Leeds on site, digital projects nationwide.",
     skip: "Skip to main content",
     brandTagline: "Open · Upgrade · Automate",
@@ -183,40 +191,40 @@ const COPY = {
     ],
     whatsappShort: "WhatsApp me",
     hero: {
-      eyebrow: "Hospitality project partner · Leeds",
-      title: "One partner to open, upgrade and automate your shop — built by someone who runs his own.",
-      subtitle: "For independent hospitality owners｜Leeds on site・digital nationwide",
+      title: "Open with experience.",
+      subtitle: "A hands-on partner for independent hospitality owners in Leeds and across the UK.",
       stats: ["Open in 8 weeks", "86% gross margin", "Website＋app built in-house"],
       cta: "WhatsApp me・free 30-minute shop visit",
       reassurance: "If I am not the right fit, I will say so",
       proof: "A real person・real shops・real numbers",
       photoLabel: "M+ open for business",
       photoPending: "Real photo pending",
+      artAlt: "Renaissance-inspired marble sculpture in a warm white plaster and walnut studio",
       scroll: "See the shops I have built",
     },
     caseStudy: {
-      eyebrow: "01 · Real-world proof",
+      eyebrow: "Real-world proof",
       title: "No theory. I have walked every step myself.",
-      body: "I built these two shops from zero to opening: site search, lease negotiation, an 8–9 week fit-out, brand, menu, POS, website, app, hiring and the monthly P&L. I have already walked every step your shop will take.",
+      body: "I built these two shops from zero to opening: site search, lease negotiation, an 8-9 week fit-out, brand, menu, POS, website, app, hiring and the monthly P&L. I have already walked every step your shop will take.",
       stages: ["Empty shell", "Fit-out", "Finished", "Trading"],
       imagePending: "M+ real photo pending",
       note: "The photographs lead because doing the work matters more than describing it.",
     },
     process: {
-      eyebrow: "02 · How it works",
+      eyebrow: "How it works",
       title: "A clear route from first visit to opening day.",
       steps: [
         ["01", "Visit and listen", "Free. We identify the most urgent problem first."],
         ["02", "Build the plan", "One timeline, one budget and a fixed fee."],
         ["03", "Deliver", "Pay in 50 / 30 / 20 stages, never by the hour."],
-        ["04", "Open and measure", "Review operations and numbers at 30–60–90 days."],
+        ["04", "Open and measure", "Review operations and numbers at 30-60-90 days."],
         ["05", "Stay useful", "Continue only where the business needs it."],
       ],
       responsibility: "Qualified contractors carry out and take responsibility for construction; I remain your single point of contact.",
       report: "Every week you receive one page: money spent, current status and next week’s work.",
     },
     services: {
-      eyebrow: "03 · Three ways I help",
+      eyebrow: "Three ways I help",
       title: "Start with the problem costing you most.",
       intro: "You do not need to buy everything at once. After the free visit, I will separate what matters now from what can wait.",
       items: [
@@ -242,11 +250,11 @@ const COPY = {
           price: "Setup＋monthly fee",
         },
       ],
-      qualifier: "Real project and real budget required — I do not sell open-ended consultancy.",
+      qualifier: "Real project and real budget required. I do not sell open-ended consultancy.",
       cta: "Show me your shop",
     },
     about: {
-      eyebrow: "04 · Founder led",
+      eyebrow: "Founder led",
       title: "I’m Tony. Running my own shops taught me what owners cannot afford to miss.",
       body: "I have built two shops from zero, handling the site search, fit-out, brand, menu, POS, website, app, hiring and monthly P&L. RNG is not advice from the sidelines. I bring the budget, timeline and specialist teams onto one line, then stay close until the doors are open and the operation is working.",
       location: "Leeds on site・digital nationwide",
@@ -254,8 +262,9 @@ const COPY = {
       portraitPending: "Founder photo pending",
     },
     boundaries: {
-      eyebrow: "05 · Three things I do not do",
+      eyebrow: "Three things I do not do",
       title: "Trust starts with clear boundaries.",
+      artAlt: "Warm white stone, dark walnut and natural linen material study",
       items: [
         ["I am not the contractor", "Qualified contractors carry out and take responsibility for construction."],
         ["I will not decide whether you should open", "It is your business. I make the risks and numbers clear."],
@@ -263,7 +272,7 @@ const COPY = {
       ],
     },
     faq: {
-      eyebrow: "06 · Questions",
+      eyebrow: "Questions",
       title: "The four practical answers owners ask for first.",
       items: [
         ["What does it cost?", "After the free shop visit, I give you a firm price. Every project uses staged fixed fees, with no hourly billing or hidden charges."],
@@ -312,15 +321,32 @@ function trackWhatsApp(location) {
   window.dispatchEvent(new CustomEvent("rng:whatsapp-click", { detail: { location } }));
 }
 
+const ResponsiveMotionContext = React.createContext({ compact: false });
+
+function useResponsiveMotionProfile() {
+  const [compact, setCompact] = useState(() => typeof window !== "undefined" && window.matchMedia("(max-width: 720px)").matches);
+
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 720px)");
+    const update = () => setCompact(query.matches);
+    update();
+    query.addEventListener("change", update);
+    return () => query.removeEventListener("change", update);
+  }, []);
+
+  return useMemo(() => ({ compact }), [compact]);
+}
+
 function Reveal({ children, className = "", delay = 0 }) {
   const reduceMotion = useReducedMotion();
+  const { compact } = React.useContext(ResponsiveMotionContext);
   return (
     <motion.div
       className={className}
-      initial={reduceMotion ? false : { opacity: 0, y: 24 }}
+      initial={reduceMotion ? false : { opacity: 0, y: compact ? 14 : 26 }}
       whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.14 }}
-      transition={{ duration: 0.64, delay, ease: [0.16, 1, 0.3, 1] }}
+      viewport={{ once: true, amount: compact ? 0.08 : 0.14 }}
+      transition={{ duration: compact ? 0.46 : 0.64, delay: compact ? delay * 0.65 : delay, ease: [0.16, 1, 0.3, 1] }}
     >
       {children}
     </motion.div>
@@ -347,8 +373,8 @@ function WhatsAppButton({ language, label, location, compact = false, inverse = 
 function MediaPlaceholder({ src = "", label, pending, portrait = false }) {
   if (src) return <img className={`real-media ${portrait ? "portrait" : ""}`} src={src} alt={label} />;
   return (
-    <div className={`media-placeholder ${portrait ? "portrait" : ""}`} role="img" aria-label={`${label} — ${pending}`}>
-      <span className="placeholder-cross" aria-hidden="true" />
+    <div className={`media-placeholder ${portrait ? "portrait" : ""}`} role="img" aria-label={`${label} - ${pending}`}>
+      <span className="placeholder-mark" aria-hidden="true">RNG</span>
       <span className="placeholder-label">{label}</span>
       <span className="placeholder-status">{pending}</span>
     </div>
@@ -356,18 +382,9 @@ function MediaPlaceholder({ src = "", label, pending, portrait = false }) {
 }
 
 function Header({ language, setLanguage, copy, activeSection }) {
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 16);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
   return (
-    <header className={`site-header ${scrolled ? "is-scrolled" : ""}`}>
-      <a className="brand" href="#top" aria-label="RNG home">
+    <header className="site-header">
+      <a className="brand" href="#top">
         <strong>RNG</strong>
         <span>{copy.brandTagline}</span>
       </a>
@@ -382,7 +399,7 @@ function Header({ language, setLanguage, copy, activeSection }) {
         })}
       </nav>
       <div className="header-actions">
-        <button className="language-toggle" type="button" onClick={() => setLanguage(language === "zh" ? "en" : "zh")} aria-label={language === "zh" ? "Switch to English" : "切換至中文"}>
+        <button className="language-toggle" type="button" onClick={() => setLanguage(language === "zh" ? "en" : "zh")} aria-label={language === "zh" ? "EN, switch to English" : "中，切換至中文"}>
           {copy.langLabel}
         </button>
         <WhatsAppButton language={language} label={copy.whatsappShort} location="header" compact />
@@ -392,29 +409,38 @@ function Header({ language, setLanguage, copy, activeSection }) {
 }
 
 function Hero({ language, copy }) {
+  const reduceMotion = useReducedMotion();
+  const { compact } = React.useContext(ResponsiveMotionContext);
+  const itemMotion = {
+    hidden: { opacity: 0, y: compact ? 12 : 20 },
+    visible: { opacity: 1, y: 0, transition: { duration: compact ? 0.42 : 0.58, ease: [0.16, 1, 0.3, 1] } },
+  };
   return (
     <section className="hero" id="top" aria-labelledby="hero-title">
-      <div className="hero-media">
-        <MediaPlaceholder src={SITE_CONFIG.media.hero} label={copy.hero.photoLabel} pending={copy.hero.photoPending} />
-      </div>
-      <div className="hero-shade" aria-hidden="true" />
-      <div className="hero-content page-shell">
-        <motion.div className="hero-copy" initial={{ opacity: 0, y: 22 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}>
-          <p className="eyebrow light">{copy.hero.eyebrow}</p>
-          <h1 id="hero-title">{copy.hero.title}</h1>
-          <p className="hero-subtitle">{copy.hero.subtitle}</p>
-          <div className="proof-strip" aria-label={copy.hero.proof}>
-            {copy.hero.stats.map((stat) => <span key={stat}>{stat}</span>)}
-          </div>
-          <div className="hero-cta-row">
-            <WhatsAppButton language={language} label={copy.hero.cta} location="hero" inverse />
-            <small>{copy.hero.reassurance}</small>
-          </div>
+      <div className="hero-intro page-shell">
+        <motion.div className="hero-copy" initial={reduceMotion ? false : "hidden"} animate="visible" variants={{ visible: { transition: { staggerChildren: compact ? 0.06 : 0.09, delayChildren: 0.06 } } }}>
+          <motion.h1 id="hero-title" variants={itemMotion}>{copy.hero.title}</motion.h1>
+          <motion.p className="hero-subtitle" variants={itemMotion}>{copy.hero.subtitle}</motion.p>
+          <motion.div className="hero-cta-row" variants={itemMotion}>
+            <WhatsAppButton language={language} label={copy.whatsappShort} location="hero" />
+          </motion.div>
         </motion.div>
-        <a className="hero-scroll" href="#case">
-          <span>{copy.hero.scroll}</span>
-          <span aria-hidden="true">↓</span>
-        </a>
+      </div>
+      <div className="hero-stage">
+        <div className="page-shell hero-frame-wrap">
+          <motion.figure className="hero-art" initial={reduceMotion ? false : { opacity: 0, y: compact ? 18 : 36, scale: compact ? 0.99 : 0.975 }} whileInView={{ opacity: 1, y: 0, scale: 1 }} viewport={{ once: true, amount: compact ? 0.08 : 0.16 }} transition={{ duration: compact ? 0.62 : 0.9, ease: [0.16, 1, 0.3, 1] }}>
+            <img src={SITE_CONFIG.media.hero} srcSet={`${SITE_CONFIG.media.heroSmall} 768w, ${SITE_CONFIG.media.hero} 1536w`} sizes="(max-width: 720px) calc(100vw - 40px), 1360px" width="1536" height="1024" alt={copy.hero.artAlt} fetchPriority="high" />
+          </motion.figure>
+        </div>
+      </div>
+      <div className="page-shell proof-matrix" aria-label={copy.hero.proof}>
+        <p>{copy.hero.proof}</p>
+        {copy.hero.stats.map((stat, index) => (
+          <motion.div className="proof-cell" initial={reduceMotion ? false : { opacity: 0, y: compact ? 10 : 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: compact ? 0.4 : 0.55, delay: reduceMotion ? 0 : index * (compact ? 0.04 : 0.07), ease: [0.16, 1, 0.3, 1] }} key={stat}>
+            <span>0{index + 1}</span>
+            <strong>{stat}</strong>
+          </motion.div>
+        ))}
       </div>
     </section>
   );
@@ -423,55 +449,79 @@ function Hero({ language, copy }) {
 function CaseStudy({ copy }) {
   return (
     <section className="case-section section-block" id="case" aria-labelledby="case-title">
-      <div className="page-shell">
-        <div className="section-intro split-intro">
-          <Reveal>
-            <p className="eyebrow">{copy.caseStudy.eyebrow}</p>
+      <div className="page-shell case-board">
+        <div className="case-statement">
+          <Reveal className="case-heading">
             <h2 id="case-title">{copy.caseStudy.title}</h2>
           </Reveal>
           <Reveal className="case-description" delay={0.08}>
             <p>{copy.caseStudy.body}</p>
-            <small>{copy.caseStudy.note}</small>
           </Reveal>
         </div>
-      </div>
-      <div className="case-rail" aria-label="M+ project stages">
-        {copy.caseStudy.stages.map((stage, index) => (
-          <Reveal className="case-frame" delay={index * 0.06} key={stage}>
-            <MediaPlaceholder src={SITE_CONFIG.media.caseStages[index]} label={`0${index + 1} · ${stage}`} pending={copy.caseStudy.imagePending} />
-          </Reveal>
-        ))}
+        <div className="case-grid" aria-label="M+ project stages">
+          {copy.caseStudy.stages.map((stage, index) => (
+            <Reveal className="case-frame" delay={index * 0.06} key={stage}>
+              <div className="case-frame-head"><span>0{index + 1}</span><strong>{stage}</strong></div>
+              <MediaPlaceholder src={SITE_CONFIG.media.caseStages[index]} label={stage} pending={copy.caseStudy.imagePending} />
+            </Reveal>
+          ))}
+        </div>
       </div>
     </section>
   );
 }
 
-function ProcessSection({ copy }) {
+function ProcessSection({ language, copy }) {
   const icons = [Storefront, TrendUp, Wrench, Clock, User];
+  const [activeStage, setActiveStage] = useState(0);
+  const reduceMotion = useReducedMotion();
+  const [number, title, body] = copy.process.steps[activeStage];
+  const ActiveIcon = icons[activeStage];
   return (
     <section className="process-section section-block" id="process" aria-labelledby="process-title">
       <div className="page-shell">
-        <Reveal className="section-intro narrow-intro">
-          <p className="eyebrow">{copy.process.eyebrow}</p>
-          <h2 id="process-title">{copy.process.title}</h2>
-        </Reveal>
-        <div className="process-grid">
-          {copy.process.steps.map(([number, title, body], index) => {
-            const Icon = icons[index];
-            return (
-              <Reveal className={`process-step ${index === 2 ? "featured" : ""}`} delay={index * 0.06} key={number}>
-                <span className="step-number">{number}</span>
-                <span className="step-icon" aria-hidden="true"><Icon size={22} weight="regular" /></span>
-                <h3>{title}</h3>
-                <p>{body}</p>
-              </Reveal>
-            );
-          })}
+        <div className="process-heading">
+          <Reveal><h2 id="process-title">{copy.process.title}</h2></Reveal>
+          <Reveal delay={0.08}><p>{copy.process.report}</p></Reveal>
         </div>
-        <Reveal className="process-note">
-          <div><Check size={20} weight="bold" aria-hidden="true" /><strong>{copy.process.responsibility}</strong></div>
-          <p>{copy.process.report}</p>
-        </Reveal>
+        <div className="process-board">
+          <aside className="process-rail" aria-label={copy.process.eyebrow}>
+            <span className="rail-label">{copy.process.eyebrow}</span>
+            {copy.process.steps.map(([stepNumber, stepTitle], index) => {
+              const Icon = icons[index];
+              return (
+                <button type="button" className={index === activeStage ? "active" : ""} onClick={() => setActiveStage(index)} aria-pressed={index === activeStage} key={stepNumber}>
+                  {index === activeStage && <motion.span className="process-active-marker" layoutId="process-active-marker" aria-hidden="true" transition={{ duration: reduceMotion ? 0 : 0.28, ease: [0.16, 1, 0.3, 1] }} />}
+                  <span>{stepNumber}</span>
+                  <Icon aria-hidden="true" size={18} />
+                  <strong>{stepTitle}</strong>
+                </button>
+              );
+            })}
+          </aside>
+          <div className="process-canvas">
+            <Reveal className="process-visual">
+              <img src={SITE_CONFIG.media.process} srcSet={`${SITE_CONFIG.media.processSmall} 720w, ${SITE_CONFIG.media.process} 1672w`} sizes="(max-width: 900px) calc(100vw - 40px), 1040px" width="1672" height="941" alt={language === "zh" ? "胡桃木桌上擺放平面圖、石材與布料樣板" : "Plans, stone and fabric samples arranged on a walnut worktable"} loading="lazy" />
+            </Reveal>
+            <div className="process-detail-grid">
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.article className="active-stage" key={`${language}-${number}`} initial={reduceMotion ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -8 }} transition={{ duration: reduceMotion ? 0 : 0.22 }}>
+                  <div className="active-stage-meta"><span>{number}</span><ActiveIcon aria-hidden="true" size={26} /></div>
+                  <h3>{title}</h3>
+                  <p>{body}</p>
+                </motion.article>
+              </AnimatePresence>
+              <div className="process-report-card">
+                <span>{language === "zh" ? "每週一頁" : "One page weekly"}</span>
+                <strong>{copy.process.report}</strong>
+              </div>
+              <div className="process-responsibility">
+                <Check size={21} weight="bold" aria-hidden="true" />
+                <p>{copy.process.responsibility}</p>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );
@@ -481,9 +531,8 @@ function ServicesSection({ language, copy }) {
   return (
     <section className="services-section section-block" id="services" aria-labelledby="services-title">
       <div className="page-shell">
-        <div className="section-intro split-intro services-intro">
+        <div className="section-intro stacked-intro services-intro">
           <Reveal>
-            <p className="eyebrow">{copy.services.eyebrow}</p>
             <h2 id="services-title">{copy.services.title}</h2>
           </Reveal>
           <Reveal delay={0.08}><p>{copy.services.intro}</p></Reveal>
@@ -491,10 +540,7 @@ function ServicesSection({ language, copy }) {
         <div className="service-grid">
           {copy.services.items.map((item, index) => (
             <Reveal className={`service-card ${index === 0 ? "recommended" : ""}`} delay={index * 0.08} key={item.number}>
-              <div className="service-card-top">
-                <span>{item.number}</span>
-                {index === 0 && <span className="recommended-mark">RNG</span>}
-              </div>
+              {index === 0 && <img className="service-image" src={SITE_CONFIG.media.materials} srcSet={`${SITE_CONFIG.media.materialsSmall} 640w, ${SITE_CONFIG.media.materials} 1122w`} sizes="(max-width: 720px) calc(100vw - 96px), 52vw" width="1122" height="1402" alt={language === "zh" ? "暖白石材、胡桃木與天然布料材質組合" : "Warm white stone, walnut and natural linen material study"} loading="lazy" />}
               <h3>{item.title}</h3>
               <p className="service-problem">{item.problem}</p>
               <p className="service-answer">{item.answer}</p>
@@ -504,7 +550,7 @@ function ServicesSection({ language, copy }) {
         </div>
         <div className="service-footer">
           <p>{copy.services.qualifier}</p>
-          <WhatsAppButton language={language} label={copy.services.cta} location="services" />
+          <WhatsAppButton language={language} label={copy.whatsappShort} location="services" />
         </div>
       </div>
     </section>
@@ -523,7 +569,6 @@ function AboutSection({ copy }) {
           <h2 id="about-title">{copy.about.title}</h2>
           <p>{copy.about.body}</p>
           <div className="location-line"><MapPin size={20} weight="fill" aria-hidden="true" /><span>{copy.about.location}</span></div>
-          <span className="signature" aria-hidden="true">Tony</span>
         </Reveal>
       </div>
     </section>
@@ -535,8 +580,8 @@ function BoundariesSection({ copy }) {
     <section className="boundaries-section section-block" id="boundaries" aria-labelledby="boundaries-title">
       <div className="page-shell boundaries-panel">
         <Reveal className="boundaries-heading">
-          <p className="eyebrow">{copy.boundaries.eyebrow}</p>
           <h2 id="boundaries-title">{copy.boundaries.title}</h2>
+          <img className="boundaries-material" src={SITE_CONFIG.media.boundaries} srcSet={`${SITE_CONFIG.media.boundariesSmall} 640w, ${SITE_CONFIG.media.boundaries} 1122w`} sizes="(max-width: 720px) 230px, 260px" width="1122" height="1402" alt={copy.boundaries.artAlt} loading="lazy" />
         </Reveal>
         <div className="boundary-list">
           {copy.boundaries.items.map(([title, body], index) => (
@@ -553,11 +598,11 @@ function BoundariesSection({ copy }) {
 
 function FaqSection({ copy }) {
   const [openIndex, setOpenIndex] = useState(0);
+  const reduceMotion = useReducedMotion();
   return (
     <section className="faq-section section-block" id="faq" aria-labelledby="faq-title">
       <div className="page-shell faq-grid">
         <Reveal className="faq-heading">
-          <p className="eyebrow">{copy.faq.eyebrow}</p>
           <h2 id="faq-title">{copy.faq.title}</h2>
         </Reveal>
         <div className="faq-list">
@@ -572,7 +617,9 @@ function FaqSection({ copy }) {
                     <CaretDown size={20} aria-hidden="true" />
                   </button>
                 </h3>
-                <div className="faq-answer" id={panelId} hidden={!isOpen}><p>{answer}</p></div>
+                <motion.div className="faq-answer" id={panelId} initial={false} animate={{ height: isOpen ? "auto" : 0, opacity: isOpen ? 1 : 0 }} transition={{ height: { duration: reduceMotion ? 0 : 0.32, ease: [0.16, 1, 0.3, 1] }, opacity: { duration: reduceMotion ? 0 : 0.2 } }} aria-hidden={!isOpen}>
+                  <div className="faq-answer-inner"><p>{answer}</p></div>
+                </motion.div>
               </Reveal>
             );
           })}
@@ -592,7 +639,7 @@ function FinalCta({ language, copy }) {
         </Reveal>
         <Reveal className="final-cta-action" delay={0.08}>
           <p>{copy.finalCta.body}</p>
-          <WhatsAppButton language={language} label={copy.finalCta.cta} location="final_cta" inverse />
+          <WhatsAppButton language={language} label={copy.whatsappShort} location="final_cta" />
         </Reveal>
       </div>
     </section>
@@ -637,6 +684,7 @@ function Footer({ copy, onOpenQr }) {
 }
 
 function WeChatModal({ open, onClose, copy }) {
+  const reduceMotion = useReducedMotion();
   useEffect(() => {
     if (!open) return undefined;
     const onKeyDown = (event) => { if (event.key === "Escape") onClose(); };
@@ -653,9 +701,9 @@ function WeChatModal({ open, onClose, copy }) {
       {open && (
         <motion.div className="modal" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} role="dialog" aria-modal="true" aria-labelledby="wechat-title">
           <button className="modal-backdrop" type="button" onClick={onClose} aria-label={copy.qrModal.close} />
-          <motion.div className="qr-panel" initial={{ opacity: 0, y: 20, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 12, scale: 0.98 }} transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}>
+          <motion.div className="qr-panel" initial={reduceMotion ? false : { opacity: 0, y: 20, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 12, scale: 0.98 }} transition={{ duration: reduceMotion ? 0 : 0.2, ease: [0.16, 1, 0.3, 1] }}>
             <div className="qr-panel-head"><h2 id="wechat-title">{copy.qrModal.title}</h2><button type="button" onClick={onClose} aria-label={copy.qrModal.close}><X size={22} /></button></div>
-            {SITE_CONFIG.wechatQr ? <img src={SITE_CONFIG.wechatQr} alt={`WeChat QR — ${SITE_CONFIG.wechatId}`} /> : <div className="qr-placeholder"><span>RNG</span><strong>{copy.qrModal.pending}</strong></div>}
+            {SITE_CONFIG.wechatQr ? <img src={SITE_CONFIG.wechatQr} alt={`WeChat QR - ${SITE_CONFIG.wechatId}`} /> : <div className="qr-placeholder"><span>RNG</span><strong>{copy.qrModal.pending}</strong></div>}
             <p>{SITE_CONFIG.wechatId || copy.qrModal.hint}</p>
           </motion.div>
         </motion.div>
@@ -693,10 +741,11 @@ function useActiveSection() {
 
 function App() {
   const [language, setLanguage] = useState(() => {
-    try { return localStorage.getItem("rng-language") === "en" ? "en" : "zh"; }
-    catch { return "zh"; }
+    try { return localStorage.getItem("rng-language") === "zh" ? "zh" : "en"; }
+    catch { return "en"; }
   });
   const [qrOpen, setQrOpen] = useState(false);
+  const motionProfile = useResponsiveMotionProfile();
   const activeSection = useActiveSection();
   const copy = useMemo(() => COPY[language], [language]);
 
@@ -709,13 +758,13 @@ function App() {
   }, [copy, language]);
 
   return (
-    <>
+    <ResponsiveMotionContext.Provider value={motionProfile}>
       <a className="skip-link" href="#main">{copy.skip}</a>
       <Header language={language} setLanguage={setLanguage} copy={copy} activeSection={activeSection} />
       <main id="main">
         <Hero language={language} copy={copy} />
         <CaseStudy copy={copy} />
-        <ProcessSection copy={copy} />
+        <ProcessSection language={language} copy={copy} />
         <ServicesSection language={language} copy={copy} />
         <AboutSection copy={copy} />
         <BoundariesSection copy={copy} />
@@ -725,7 +774,7 @@ function App() {
       <Footer copy={copy} onOpenQr={() => setQrOpen(true)} />
       <StickyBar language={language} copy={copy} />
       <WeChatModal open={qrOpen} onClose={() => setQrOpen(false)} copy={copy} />
-    </>
+    </ResponsiveMotionContext.Provider>
   );
 }
 
