@@ -15,7 +15,7 @@ import {
   Wrench,
   X,
 } from "@phosphor-icons/react";
-import { AnimatePresence, motion, useMotionValueEvent, useReducedMotion, useScroll } from "motion/react";
+import { AnimatePresence, motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from "motion/react";
 import "./styles.css";
 import renaissanceVideo from "../image/renaissance_editorial_explainer.mp4";
 
@@ -442,9 +442,59 @@ function Loader({ ready, onComplete }) {
   );
 }
 
-function Header({ language, setLanguage, copy }) {
+function Header({ language, setLanguage, copy, heroScrollProgress }) {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [brandOrigin, setBrandOrigin] = useState({ x: 0, y: 0, scaleX: 1, scaleY: 1 });
+  const brandRef = useRef(null);
   const reduceMotion = useReducedMotion();
+
+  const brandX = useTransform(heroScrollProgress, [0, 0.16], [brandOrigin.x, 0]);
+  const brandY = useTransform(heroScrollProgress, [0, 0.16], [brandOrigin.y, 0]);
+  const brandScaleX = useTransform(heroScrollProgress, [0, 0.16], [brandOrigin.scaleX, 1]);
+  const brandScaleY = useTransform(heroScrollProgress, [0, 0.16], [brandOrigin.scaleY, 1]);
+
+  useEffect(() => {
+    const measureBrandOrigin = () => {
+      const brand = brandRef.current;
+      const origin = document.querySelector(".hero-brand-origin");
+      const header = document.querySelector(".site-header");
+      const heroSticky = origin?.closest(".hero-sticky");
+      if (!brand || !origin || !header || !heroSticky) return;
+
+      const headerRect = header.getBoundingClientRect();
+      const brandWidth = brand.offsetWidth;
+      const brandHeight = brand.offsetHeight;
+      const originWidth = origin.offsetWidth;
+      const originHeight = origin.offsetHeight;
+      if (!brandWidth || !brandHeight || !originWidth || !originHeight) return;
+
+      let originLeft = 0;
+      let originTop = 0;
+      let originNode = origin;
+      while (originNode && originNode !== heroSticky) {
+        originLeft += originNode.offsetLeft;
+        originTop += originNode.offsetTop;
+        originNode = originNode.offsetParent;
+      }
+      if (originNode !== heroSticky) return;
+
+      const targetCenterX = headerRect.left + headerRect.width / 2;
+      const targetCenterY = headerRect.top + headerRect.height / 2;
+      setBrandOrigin({
+        x: originLeft + originWidth / 2 - targetCenterX,
+        y: originTop + originHeight / 2 - targetCenterY,
+        scaleX: originWidth / brandWidth,
+        scaleY: originHeight / brandHeight,
+      });
+    };
+
+    const frame = window.requestAnimationFrame(measureBrandOrigin);
+    window.addEventListener("resize", measureBrandOrigin);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("resize", measureBrandOrigin);
+    };
+  }, []);
 
   useEffect(() => {
     document.body.classList.toggle("menu-open", menuOpen);
@@ -464,9 +514,15 @@ function Header({ language, setLanguage, copy }) {
         <button className="menu-toggle" type="button" onClick={() => setMenuOpen(true)} aria-label={language === "zh" ? "打開選單" : "Open menu"} aria-expanded={menuOpen}>
           <Equals size={42} weight="thin" aria-hidden="true" />
         </button>
-        <a className="brand" href="#top" aria-label="RNG home">
+        <motion.a
+          className="brand morph-brand"
+          href="#top"
+          aria-label="RNG home"
+          ref={brandRef}
+          style={{ x: brandX, y: brandY, scaleX: brandScaleX, scaleY: brandScaleY }}
+        >
           <strong>RNG</strong>
-        </a>
+        </motion.a>
         <div className="header-actions">
           <button className="language-toggle" type="button" onClick={() => setLanguage(language === "zh" ? "en" : "zh")} aria-label={language === "zh" ? "EN, switch to English" : "中，切換至中文"}>
             {copy.langLabel}
@@ -503,12 +559,11 @@ function Header({ language, setLanguage, copy }) {
   );
 }
 
-function Hero({ copy, onVideoReady }) {
+function Hero({ copy, onVideoReady, sectionRef, scrollYProgress }) {
   const reduceMotion = useReducedMotion();
-  const sectionRef = useRef(null);
   const videoRef = useRef(null);
   const pendingProgress = useRef(0);
-  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end end"] });
+  const titleBlockOpacity = useTransform(scrollYProgress, [0, 0.1, 0.17], [1, 1, 0]);
 
   const seekVideo = (progress) => {
     pendingProgress.current = progress;
@@ -530,8 +585,8 @@ function Hero({ copy, onVideoReady }) {
       <div className="hero-sticky">
         <video ref={videoRef} className="hero-video" src={renaissanceVideo} muted playsInline preload="auto" onLoadedMetadata={handleVideoReady} onCanPlay={onVideoReady} aria-label={copy.hero.artAlt} />
         <div className="hero-scrim" aria-hidden="true" />
-        <motion.div className="hero-title-block" initial={reduceMotion ? false : { clipPath: "inset(0 100% 0 0)" }} animate={{ clipPath: "inset(0 0% 0 0)" }} transition={{ duration: reduceMotion ? 0.01 : 1.05, delay: reduceMotion ? 0 : 0.18, ease: [0.76, 0, 0.24, 1] }}>
-          <h1 id="hero-title" aria-label="RNG">RNG</h1>
+        <motion.div className="hero-title-block" style={{ opacity: titleBlockOpacity }} initial={reduceMotion ? false : { clipPath: "inset(0 100% 0 0)" }} animate={{ clipPath: "inset(0 0% 0 0)" }} transition={{ duration: reduceMotion ? 0.01 : 1.05, delay: reduceMotion ? 0 : 0.18, ease: [0.76, 0, 0.24, 1] }}>
+          <h1 id="hero-title" className="hero-brand-origin" aria-label="RNG">RNG</h1>
         </motion.div>
       </div>
     </section>
@@ -852,6 +907,8 @@ function App() {
   const [qrOpen, setQrOpen] = useState(false);
   const [mediaReady, setMediaReady] = useState(false);
   const [loaderVisible, setLoaderVisible] = useState(true);
+  const heroRef = useRef(null);
+  const { scrollYProgress: heroScrollProgress } = useScroll({ target: heroRef, offset: ["start start", "end end"] });
   const motionProfile = useResponsiveMotionProfile();
   const copy = useMemo(() => COPY[language], [language]);
 
@@ -877,9 +934,9 @@ function App() {
     <ResponsiveMotionContext.Provider value={motionProfile}>
       <AnimatePresence>{loaderVisible && <Loader ready={mediaReady} onComplete={() => setLoaderVisible(false)} />}</AnimatePresence>
       <a className="skip-link" href="#main">{copy.skip}</a>
-      <Header language={language} setLanguage={setLanguage} copy={copy} />
+      <Header language={language} setLanguage={setLanguage} copy={copy} heroScrollProgress={heroScrollProgress} />
       <main id="main">
-        <Hero copy={copy} onVideoReady={() => setMediaReady(true)} />
+        <Hero copy={copy} onVideoReady={() => setMediaReady(true)} sectionRef={heroRef} scrollYProgress={heroScrollProgress} />
         <CaseStudy copy={copy} />
         <PastReferences copy={copy} />
         <ProcessSection language={language} copy={copy} />

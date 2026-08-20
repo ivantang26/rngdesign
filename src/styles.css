@@ -1158,6 +1158,18 @@ h3 {
   justify-self: center;
 }
 
+.site-header .morph-brand {
+  position: relative;
+  z-index: 1;
+  width: max-content;
+  transform-origin: center;
+  will-change: transform;
+}
+
+.site-header .morph-brand strong {
+  display: block;
+}
+
 .site-header .brand strong {
   color: var(--ink);
   font-family: var(--sans);
@@ -1344,6 +1356,11 @@ h3 {
   line-height: 0.78;
   text-indent: 0.17em;
   white-space: nowrap;
+}
+
+.hero .hero-brand-origin {
+  width: max-content;
+  visibility: hidden;
 }
 
 @media (max-width: 900px) {
