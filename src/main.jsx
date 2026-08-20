@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
   ArrowUpRight,
@@ -6,6 +6,7 @@ import {
   ChatCircleText,
   Check,
   Clock,
+  Equals,
   MapPin,
   Phone,
   Storefront,
@@ -14,8 +15,9 @@ import {
   Wrench,
   X,
 } from "@phosphor-icons/react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import { AnimatePresence, motion, useMotionValueEvent, useReducedMotion, useScroll } from "motion/react";
 import "./styles.css";
+import renaissanceVideo from "../image/renaissance_editorial_explainer.mp4";
 
 const SITE_CONFIG = {
   whatsappNumber: "",
@@ -36,6 +38,13 @@ const SITE_CONFIG = {
     materialsSmall: "/images/generated/material-still-life-640.webp",
     boundaries: "/images/generated/enquiry-materials.webp",
     boundariesSmall: "/images/generated/enquiry-materials-640.webp",
+    references: {
+      hongKongFrontage: "/images/references/past-hong-kong-ma-wan-frontage.webp",
+      hongKongGarden: "/images/references/past-hong-kong-ma-wan-garden-room.webp",
+      glasgowCounter: "/images/references/past-uk-glasgow-matcha-counter.webp",
+      glasgowFrontage: "/images/references/past-uk-glasgow-matcha-frontage.webp",
+      vidaCoffee: "/images/references/past-studio-vida-coffee.webp",
+    },
   },
 };
 
@@ -50,9 +59,10 @@ const COPY = {
     pageDescription: "自己開過舖嘅餐飲項目拍檔，幫你開新店、執靚間舖同慳人手。Leeds 出發，數碼項目全國都做。",
     skip: "跳到主要內容",
     brandTagline: "開舖・旺舖・慳人手",
-    langLabel: "EN",
+    langLabel: "SELECT",
     nav: [
       ["真店", "#case"],
+      ["過往參考", "#past"],
       ["點樣行", "#process"],
       ["三樣嘢", "#services"],
       ["Tony", "#about"],
@@ -60,16 +70,7 @@ const COPY = {
     ],
     whatsappShort: "WhatsApp 我",
     hero: {
-      title: "識開舖，先至幫到你。",
-      subtitle: "獨立餐飲老闆嘅實戰拍檔，Leeds 出發，數碼項目全國都做。",
-      stats: ["8 週開店", "86% 毛利", "website＋app 自己 build"],
-      cta: "WhatsApp 我・免費 30 分鐘上門診斷",
-      reassurance: "唔啱做唔會硬 sell",
-      proof: "真人・真舖・真數字",
-      photoLabel: "M+ 營業中實相",
-      photoPending: "真相待補",
       artAlt: "暖白石灰牆與胡桃木壁龕內的文藝復興風格大理石雕像",
-      scroll: "睇我做過嘅真店",
     },
     caseStudy: {
       eyebrow: "真店證據",
@@ -78,6 +79,17 @@ const COPY = {
       stages: ["空殼", "裝修中", "完工", "營業中"],
       imagePending: "M+ 真相待補",
       note: "相大過字，因為做過比講過更有說服力。",
+    },
+    past: {
+      title: "俾 Leeds 做店嘅過往參考。",
+      intro: "由香港、英國到品牌視覺，揀幾張相留下空間、材料同動線嘅重點。唔放成份 deck，只帶走值得用嘅細節。",
+      items: [
+        ["香港／馬灣", "茶飲店內外", "淺色門面、樹蔭同室內外連接，令細店都有一個自然嘅入口。", SITE_CONFIG.media.references.hongKongFrontage, "大樹下的淺色茶飲店門面，前方有遮棚、玻璃門和綠化。"],
+        ["香港／馬灣", "有樹嘅休憩位", "座位圍住樹同窗邊展開，俾客人停留得耐啲，亦令公共空間有生活感。", SITE_CONFIG.media.references.hongKongGarden, "玻璃天幕下的室內花園休憩區，樹木和座位圍繞中央桌台。"],
+        ["英國／格拉斯哥", "M plus matcha", "深木、抹茶綠同一條清楚嘅服務動線，將小店做出完整體驗。", SITE_CONFIG.media.references.glasgowCounter, "格拉斯哥 M plus matcha 店內的深木色吧檯、綠色天花和展示牆。"],
+        ["英國／格拉斯哥", "街舖門面", "門面、招牌同室內燈光一齊工作，客人未入門已經知道間舖係乜。", SITE_CONFIG.media.references.glasgowFrontage, "格拉斯哥 M plus matcha 店的街舖門面和玻璃入口。"],
+        ["品牌參考／YE4 LAB", "Vida Coffee", "一套有節奏嘅包裝系統，將咖啡品牌由一包豆帶到每個接觸點。", SITE_CONFIG.media.references.vidaCoffee, "Vida Coffee 的包裝、杯、卡片和品牌物料排列在淺色桌面上。"],
+      ],
     },
     process: {
       eyebrow: "點樣行",
@@ -181,9 +193,10 @@ const COPY = {
     pageDescription: "A hands-on partner for independent hospitality owners opening, upgrading or automating a shop. Leeds on site, digital projects nationwide.",
     skip: "Skip to main content",
     brandTagline: "Open · Upgrade · Automate",
-    langLabel: "中",
+    langLabel: "SELECT",
     nav: [
       ["Real shop", "#case"],
+      ["Past refs", "#past"],
       ["Process", "#process"],
       ["What I do", "#services"],
       ["Tony", "#about"],
@@ -191,16 +204,7 @@ const COPY = {
     ],
     whatsappShort: "WhatsApp me",
     hero: {
-      title: "Open with experience.",
-      subtitle: "A hands-on partner for independent hospitality owners in Leeds and across the UK.",
-      stats: ["Open in 8 weeks", "86% gross margin", "Website＋app built in-house"],
-      cta: "WhatsApp me・free 30-minute shop visit",
-      reassurance: "If I am not the right fit, I will say so",
-      proof: "A real person・real shops・real numbers",
-      photoLabel: "M+ open for business",
-      photoPending: "Real photo pending",
       artAlt: "Renaissance-inspired marble sculpture in a warm white plaster and walnut studio",
-      scroll: "See the shops I have built",
     },
     caseStudy: {
       eyebrow: "Real-world proof",
@@ -209,6 +213,17 @@ const COPY = {
       stages: ["Empty shell", "Fit-out", "Finished", "Trading"],
       imagePending: "M+ real photo pending",
       note: "The photographs lead because doing the work matters more than describing it.",
+    },
+    past: {
+      title: "Past references for Leeds work.",
+      intro: "Selected images from Hong Kong, Glasgow and brand practice. The decks stay behind. The details worth carrying forward come first.",
+      items: [
+        ["Hong Kong / Ma Wan", "Tea shop, inside and out", "A light frontage, mature planting and a clear connection between the shop and the street.", SITE_CONFIG.media.references.hongKongFrontage, "Light tea shop frontage beneath a mature tree with a canopy, glass doors and planting."],
+        ["Hong Kong / Ma Wan", "A garden room", "A planted seating landscape gives people a reason to stay, not just a reason to order.", SITE_CONFIG.media.references.hongKongGarden, "A garden-like seating area beneath a glass roof, with trees, tables and rounded stools."],
+        ["UK / Glasgow", "M plus matcha", "Dark timber, matcha green and a clear service line make a compact shop feel complete.", SITE_CONFIG.media.references.glasgowCounter, "M plus matcha counter in Glasgow with dark timber, green ceiling detail and a patterned floor."],
+        ["UK / Glasgow", "The street frontage", "Signage, glazing and warm interior light do the work before the customer reaches the door.", SITE_CONFIG.media.references.glasgowFrontage, "M plus matcha shopfront in Glasgow with a lit sign, glazed entrance and street posters."],
+        ["Brand reference / YE4 LAB", "Vida Coffee", "A disciplined packaging system that carries a coffee brand across every useful touchpoint.", SITE_CONFIG.media.references.vidaCoffee, "Vida Coffee packaging, cards and cups arranged on a pale surface."],
+      ],
     },
     process: {
       eyebrow: "How it works",
@@ -381,66 +396,143 @@ function MediaPlaceholder({ src = "", label, pending, portrait = false }) {
   );
 }
 
-function Header({ language, setLanguage, copy, activeSection }) {
+function Loader({ ready, onComplete }) {
+  const [progress, setProgress] = useState(8);
+  const reduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    const steps = [
+      window.setTimeout(() => setProgress(34), reduceMotion ? 20 : 360),
+      window.setTimeout(() => setProgress(68), reduceMotion ? 40 : 820),
+      window.setTimeout(() => setProgress(86), reduceMotion ? 60 : 1320),
+    ];
+    return () => steps.forEach(window.clearTimeout);
+  }, [reduceMotion]);
+
+  useEffect(() => {
+    if (!ready) return undefined;
+    const finish = window.setTimeout(() => setProgress(100), reduceMotion ? 20 : 240);
+    const dismiss = window.setTimeout(onComplete, reduceMotion ? 80 : 920);
+    return () => {
+      window.clearTimeout(finish);
+      window.clearTimeout(dismiss);
+    };
+  }, [onComplete, ready, reduceMotion]);
+
   return (
-    <header className="site-header">
-      <a className="brand" href="#top">
+    <motion.div
+      className="rng-loader"
+      initial={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: reduceMotion ? 0.01 : 0.55, ease: [0.76, 0, 0.24, 1] }}
+      aria-label={`Loading RNG, ${progress}%`}
+    >
+      <div className="loader-ghost" aria-hidden="true">RNG</div>
+      <motion.div
+        className="loader-card"
+        initial={reduceMotion ? false : { opacity: 0, scale: 0.96 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+      >
         <strong>RNG</strong>
-        <span>{copy.brandTagline}</span>
-      </a>
-      <nav className="desktop-nav" aria-label="Primary navigation">
-        {copy.nav.map(([label, href]) => {
-          const id = href.slice(1);
-          return (
-            <a className={activeSection === id ? "active" : ""} href={href} key={href} aria-current={activeSection === id ? "location" : undefined}>
-              {label}
-            </a>
-          );
-        })}
-      </nav>
-      <div className="header-actions">
-        <button className="language-toggle" type="button" onClick={() => setLanguage(language === "zh" ? "en" : "zh")} aria-label={language === "zh" ? "EN, switch to English" : "中，切換至中文"}>
-          {copy.langLabel}
-        </button>
-        <WhatsAppButton language={language} label={copy.whatsappShort} location="header" compact />
-      </div>
-    </header>
+        <span>{progress}%</span>
+        <i aria-hidden="true" style={{ transform: `scaleX(${progress / 100})` }} />
+      </motion.div>
+    </motion.div>
   );
 }
 
-function Hero({ language, copy }) {
+function Header({ language, setLanguage, copy }) {
+  const [menuOpen, setMenuOpen] = useState(false);
   const reduceMotion = useReducedMotion();
-  const { compact } = React.useContext(ResponsiveMotionContext);
-  const itemMotion = {
-    hidden: { opacity: 0, y: compact ? 12 : 20 },
-    visible: { opacity: 1, y: 0, transition: { duration: compact ? 0.42 : 0.58, ease: [0.16, 1, 0.3, 1] } },
-  };
+
+  useEffect(() => {
+    document.body.classList.toggle("menu-open", menuOpen);
+    const onKeyDown = (event) => {
+      if (event.key === "Escape") setMenuOpen(false);
+    };
+    if (menuOpen) window.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.classList.remove("menu-open");
+      window.removeEventListener("keydown", onKeyDown);
+    };
+  }, [menuOpen]);
+
   return (
-    <section className="hero" id="top" aria-labelledby="hero-title">
-      <div className="hero-intro page-shell">
-        <motion.div className="hero-copy" initial={reduceMotion ? false : "hidden"} animate="visible" variants={{ visible: { transition: { staggerChildren: compact ? 0.06 : 0.09, delayChildren: 0.06 } } }}>
-          <motion.h1 id="hero-title" variants={itemMotion}>{copy.hero.title}</motion.h1>
-          <motion.p className="hero-subtitle" variants={itemMotion}>{copy.hero.subtitle}</motion.p>
-          <motion.div className="hero-cta-row" variants={itemMotion}>
-            <WhatsAppButton language={language} label={copy.whatsappShort} location="hero" />
-          </motion.div>
-        </motion.div>
-      </div>
-      <div className="hero-stage">
-        <div className="page-shell hero-frame-wrap">
-          <motion.figure className="hero-art" initial={reduceMotion ? false : { opacity: 0, y: compact ? 18 : 36, scale: compact ? 0.99 : 0.975 }} whileInView={{ opacity: 1, y: 0, scale: 1 }} viewport={{ once: true, amount: compact ? 0.08 : 0.16 }} transition={{ duration: compact ? 0.62 : 0.9, ease: [0.16, 1, 0.3, 1] }}>
-            <img src={SITE_CONFIG.media.hero} srcSet={`${SITE_CONFIG.media.heroSmall} 768w, ${SITE_CONFIG.media.hero} 1536w`} sizes="(max-width: 720px) calc(100vw - 40px), 1360px" width="1536" height="1024" alt={copy.hero.artAlt} fetchPriority="high" />
-          </motion.figure>
+    <>
+      <header className="site-header">
+        <button className="menu-toggle" type="button" onClick={() => setMenuOpen(true)} aria-label={language === "zh" ? "打開選單" : "Open menu"} aria-expanded={menuOpen}>
+          <Equals size={42} weight="thin" aria-hidden="true" />
+        </button>
+        <a className="brand" href="#top" aria-label="RNG home">
+          <strong>RNG</strong>
+        </a>
+        <div className="header-actions">
+          <button className="language-toggle" type="button" onClick={() => setLanguage(language === "zh" ? "en" : "zh")} aria-label={language === "zh" ? "EN, switch to English" : "中，切換至中文"}>
+            {copy.langLabel}
+          </button>
+          <a className="header-contact" href="#contact">CONTACT US</a>
         </div>
-      </div>
-      <div className="page-shell proof-matrix" aria-label={copy.hero.proof}>
-        <p>{copy.hero.proof}</p>
-        {copy.hero.stats.map((stat, index) => (
-          <motion.div className="proof-cell" initial={reduceMotion ? false : { opacity: 0, y: compact ? 10 : 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.3 }} transition={{ duration: compact ? 0.4 : 0.55, delay: reduceMotion ? 0 : index * (compact ? 0.04 : 0.07), ease: [0.16, 1, 0.3, 1] }} key={stat}>
-            <span>0{index + 1}</span>
-            <strong>{stat}</strong>
+      </header>
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div className="menu-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: reduceMotion ? 0.01 : 0.35 }} role="dialog" aria-modal="true" aria-label={language === "zh" ? "選單" : "Menu"}>
+            <button className="menu-scrim" type="button" onClick={() => setMenuOpen(false)} aria-label={language === "zh" ? "關閉選單" : "Close menu"} />
+            <motion.div className="menu-sheet" initial={reduceMotion ? false : { x: "-104%" }} animate={{ x: 0 }} exit={{ x: "-104%" }} transition={{ duration: reduceMotion ? 0.01 : 0.72, ease: [0.76, 0, 0.24, 1] }}>
+              <img src={SITE_CONFIG.media.hero} alt="" aria-hidden="true" />
+              <div className="menu-head">
+                <button type="button" onClick={() => setMenuOpen(false)} aria-label={language === "zh" ? "關閉選單" : "Close menu"}><X size={38} weight="thin" /></button>
+                <strong>RNG</strong>
+              </div>
+              <nav className="menu-links" aria-label="Primary navigation">
+                {copy.nav.map(([label, href], index) => (
+                  <motion.a href={href} onClick={() => setMenuOpen(false)} key={href} initial={reduceMotion ? false : { opacity: 0, x: -18 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: reduceMotion ? 0 : 0.22 + index * 0.055 }}>
+                    {label}
+                  </motion.a>
+                ))}
+              </nav>
+              <div className="menu-actions">
+                <WhatsAppButton language={language} label={copy.whatsappShort} location="menu" compact />
+                <a href="#services" onClick={() => setMenuOpen(false)}>{language === "zh" ? "睇服務" : "View services"}</a>
+              </div>
+            </motion.div>
           </motion.div>
-        ))}
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
+function Hero({ copy, onVideoReady }) {
+  const reduceMotion = useReducedMotion();
+  const sectionRef = useRef(null);
+  const videoRef = useRef(null);
+  const pendingProgress = useRef(0);
+  const { scrollYProgress } = useScroll({ target: sectionRef, offset: ["start start", "end end"] });
+
+  const seekVideo = (progress) => {
+    pendingProgress.current = progress;
+    const video = videoRef.current;
+    if (!video || !Number.isFinite(video.duration)) return;
+    const duration = Math.max(0, video.duration - 0.04);
+    video.currentTime = reduceMotion ? 0 : progress * duration;
+  };
+
+  useMotionValueEvent(scrollYProgress, "change", seekVideo);
+
+  const handleVideoReady = () => {
+    seekVideo(pendingProgress.current);
+    onVideoReady();
+  };
+
+  return (
+    <section className="hero" id="top" aria-labelledby="hero-title" ref={sectionRef}>
+      <div className="hero-sticky">
+        <video ref={videoRef} className="hero-video" src={renaissanceVideo} muted playsInline preload="auto" onLoadedMetadata={handleVideoReady} onCanPlay={onVideoReady} aria-label={copy.hero.artAlt} />
+        <div className="hero-scrim" aria-hidden="true" />
+        <motion.div className="hero-title-block" initial={reduceMotion ? false : { clipPath: "inset(0 100% 0 0)" }} animate={{ clipPath: "inset(0 0% 0 0)" }} transition={{ duration: reduceMotion ? 0.01 : 1.05, delay: reduceMotion ? 0 : 0.18, ease: [0.76, 0, 0.24, 1] }}>
+          <h1 id="hero-title" aria-label="RNG">RNG</h1>
+        </motion.div>
       </div>
     </section>
   );
@@ -463,6 +555,37 @@ function CaseStudy({ copy }) {
             <Reveal className="case-frame" delay={index * 0.06} key={stage}>
               <div className="case-frame-head"><span>0{index + 1}</span><strong>{stage}</strong></div>
               <MediaPlaceholder src={SITE_CONFIG.media.caseStages[index]} label={stage} pending={copy.caseStudy.imagePending} />
+            </Reveal>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function PastReferences({ copy }) {
+  return (
+    <section className="past-section section-block" id="past" aria-labelledby="past-title">
+      <div className="page-shell past-board">
+        <div className="past-heading">
+          <Reveal>
+            <h2 id="past-title">{copy.past.title}</h2>
+          </Reveal>
+          <Reveal delay={0.08}>
+            <p>{copy.past.intro}</p>
+          </Reveal>
+        </div>
+        <div className="past-grid">
+          {copy.past.items.map(([location, title, body, image, alt], index) => (
+            <Reveal className={`past-item past-item-${index + 1}`} delay={index * 0.05} key={`${location}-${title}`}>
+              <figure>
+                <img src={image} alt={alt} loading="lazy" />
+                <figcaption>
+                  <span>{location}</span>
+                  <h3>{title}</h3>
+                  <p>{body}</p>
+                </figcaption>
+              </figure>
             </Reveal>
           ))}
         </div>
@@ -721,32 +844,15 @@ function StickyBar({ language, copy }) {
   );
 }
 
-function useActiveSection() {
-  const [active, setActive] = useState("");
-  useEffect(() => {
-    const ids = ["case", "process", "services", "about", "faq"];
-    const elements = ids.map((id) => document.getElementById(id)).filter(Boolean);
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const visible = entries.filter((entry) => entry.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
-        if (visible) setActive(visible.target.id);
-      },
-      { rootMargin: "-25% 0px -60% 0px", threshold: [0, 0.15, 0.4] },
-    );
-    elements.forEach((element) => observer.observe(element));
-    return () => observer.disconnect();
-  }, []);
-  return active;
-}
-
 function App() {
   const [language, setLanguage] = useState(() => {
     try { return localStorage.getItem("rng-language") === "zh" ? "zh" : "en"; }
     catch { return "en"; }
   });
   const [qrOpen, setQrOpen] = useState(false);
+  const [mediaReady, setMediaReady] = useState(false);
+  const [loaderVisible, setLoaderVisible] = useState(true);
   const motionProfile = useResponsiveMotionProfile();
-  const activeSection = useActiveSection();
   const copy = useMemo(() => COPY[language], [language]);
 
   useEffect(() => {
@@ -757,13 +863,25 @@ function App() {
     if (description) description.setAttribute("content", copy.pageDescription);
   }, [copy, language]);
 
+  useEffect(() => {
+    if (!loaderVisible) return undefined;
+    document.body.classList.add("loading");
+    const safety = window.setTimeout(() => setMediaReady(true), 5000);
+    return () => {
+      document.body.classList.remove("loading");
+      window.clearTimeout(safety);
+    };
+  }, [loaderVisible]);
+
   return (
     <ResponsiveMotionContext.Provider value={motionProfile}>
+      <AnimatePresence>{loaderVisible && <Loader ready={mediaReady} onComplete={() => setLoaderVisible(false)} />}</AnimatePresence>
       <a className="skip-link" href="#main">{copy.skip}</a>
-      <Header language={language} setLanguage={setLanguage} copy={copy} activeSection={activeSection} />
+      <Header language={language} setLanguage={setLanguage} copy={copy} />
       <main id="main">
-        <Hero language={language} copy={copy} />
+        <Hero copy={copy} onVideoReady={() => setMediaReady(true)} />
         <CaseStudy copy={copy} />
+        <PastReferences copy={copy} />
         <ProcessSection language={language} copy={copy} />
         <ServicesSection language={language} copy={copy} />
         <AboutSection copy={copy} />
@@ -771,7 +889,7 @@ function App() {
         <FaqSection copy={copy} />
         <FinalCta language={language} copy={copy} />
       </main>
-      <Footer copy={copy} onOpenQr={() => setQrOpen(true)} />
+      <div id="contact"><Footer copy={copy} onOpenQr={() => setQrOpen(true)} /></div>
       <StickyBar language={language} copy={copy} />
       <WeChatModal open={qrOpen} onClose={() => setQrOpen(false)} copy={copy} />
     </ResponsiveMotionContext.Provider>
