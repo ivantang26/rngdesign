@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#fbfaf7"/>
+  <path d="M0 0h28v630H0z" fill="#1e7a46"/>
+  <g fill="#1e7a46" opacity=".12">
+    <circle cx="1080" cy="110" r="4"/><circle cx="1108" cy="110" r="4"/><circle cx="1136" cy="110" r="4"/>
+    <circle cx="1080" cy="138" r="4"/><circle cx="1108" cy="138" r="4"/><circle cx="1136" cy="138" r="4"/>
+    <circle cx="1080" cy="166" r="4"/><circle cx="1108" cy="166" r="4"/><circle cx="1136" cy="166" r="4"/>
+  </g>
+  <text x="104" y="145" fill="#1e7a46" font-family="Arial, sans-serif" font-size="48" font-weight="800" letter-spacing="-3">RNG</text>
+  <text x="104" y="284" fill="#18251e" font-family="Arial, sans-serif" font-size="76" font-weight="700" letter-spacing="-3">Open. Upgrade.</text>
+  <text x="104" y="374" fill="#18251e" font-family="Arial, sans-serif" font-size="76" font-weight="700" letter-spacing="-3">Automate.</text>
+  <text x="104" y="465" fill="#606a63" font-family="Arial, sans-serif" font-size="30">Hospitality project partner · Leeds</text>
+  <rect x="104" y="518" width="250" height="6" fill="#a7794d"/>
+</svg>
