@@ -442,7 +442,7 @@ function Loader({ ready, onComplete }) {
   );
 }
 
-function Header({ language, setLanguage, copy, heroScrollProgress }) {
+function Header({ language, copy, heroScrollProgress }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [brandOrigin, setBrandOrigin] = useState({ x: 0, y: 0 });
   const brandRef = useRef(null);
@@ -526,9 +526,6 @@ function Header({ language, setLanguage, copy, heroScrollProgress }) {
           <strong>RNG</strong>
         </motion.a>
         <div className="header-actions">
-          <button className="language-toggle" type="button" onClick={() => setLanguage(language === "zh" ? "en" : "zh")} aria-label={language === "zh" ? "EN, switch to English" : "中，切換至中文"}>
-            {copy.langLabel}
-          </button>
           <a className="header-contact" href="#contact">CONTACT US</a>
         </div>
       </motion.header>
@@ -902,25 +899,21 @@ function StickyBar({ language, copy }) {
 }
 
 function App() {
-  const [language, setLanguage] = useState(() => {
-    try { return localStorage.getItem("rng-language") === "zh" ? "zh" : "en"; }
-    catch { return "en"; }
-  });
+  const language = "en";
   const [qrOpen, setQrOpen] = useState(false);
   const [mediaReady, setMediaReady] = useState(false);
   const [loaderVisible, setLoaderVisible] = useState(true);
   const heroRef = useRef(null);
   const { scrollYProgress: heroScrollProgress } = useScroll({ target: heroRef, offset: ["start start", "end end"] });
   const motionProfile = useResponsiveMotionProfile();
-  const copy = useMemo(() => COPY[language], [language]);
+  const copy = COPY.en;
 
   useEffect(() => {
-    try { localStorage.setItem("rng-language", language); } catch { /* Storage may be disabled. */ }
-    document.documentElement.lang = language === "zh" ? "zh-Hant" : "en-GB";
+    document.documentElement.lang = "en-GB";
     document.title = copy.pageTitle;
     const description = document.querySelector('meta[name="description"]');
     if (description) description.setAttribute("content", copy.pageDescription);
-  }, [copy, language]);
+  }, [copy]);
 
   useEffect(() => {
     if (!loaderVisible) return undefined;
@@ -936,7 +929,7 @@ function App() {
     <ResponsiveMotionContext.Provider value={motionProfile}>
       <AnimatePresence>{loaderVisible && <Loader ready={mediaReady} onComplete={() => setLoaderVisible(false)} />}</AnimatePresence>
       <a className="skip-link" href="#main">{copy.skip}</a>
-      <Header language={language} setLanguage={setLanguage} copy={copy} heroScrollProgress={heroScrollProgress} />
+      <Header language={language} copy={copy} heroScrollProgress={heroScrollProgress} />
       <main id="main">
         <Hero copy={copy} onVideoReady={() => setMediaReady(true)} sectionRef={heroRef} scrollYProgress={heroScrollProgress} />
         <CaseStudy copy={copy} />
