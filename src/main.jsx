@@ -444,14 +444,21 @@ function Loader({ ready, onComplete }) {
 
 function Header({ language, setLanguage, copy, heroScrollProgress }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [brandOrigin, setBrandOrigin] = useState({ x: 0, y: 0, scaleX: 1, scaleY: 1 });
+  const [brandOrigin, setBrandOrigin] = useState({ x: 0, y: 0 });
   const brandRef = useRef(null);
+  const brandFontRange = useRef({ from: 16, to: 16 });
   const reduceMotion = useReducedMotion();
 
   const brandX = useTransform(heroScrollProgress, [0, 0.16], [brandOrigin.x, 0]);
   const brandY = useTransform(heroScrollProgress, [0, 0.16], [brandOrigin.y, 0]);
-  const brandScaleX = useTransform(heroScrollProgress, [0, 0.16], [brandOrigin.scaleX, 1]);
-  const brandScaleY = useTransform(heroScrollProgress, [0, 0.16], [brandOrigin.scaleY, 1]);
+  const headerBackground = useTransform(heroScrollProgress, [0, 0.16], ["rgba(247, 247, 243, 1)", "rgba(247, 247, 243, 0)"]);
+  const headerBorder = useTransform(heroScrollProgress, [0, 0.16], ["rgba(17, 19, 24, 0.1)", "rgba(17, 19, 24, 0)"]);
+
+  useMotionValueEvent(heroScrollProgress, "change", (progress) => {
+    const { from, to } = brandFontRange.current;
+    const amount = Math.min(Math.max(progress / 0.16, 0), 1);
+    brandRef.current?.style.setProperty("--brand-live-font-size", `${from + (to - from) * amount}px`);
+  });
 
   useEffect(() => {
     const measureBrandOrigin = () => {
@@ -462,30 +469,25 @@ function Header({ language, setLanguage, copy, heroScrollProgress }) {
       if (!brand || !origin || !header || !heroSticky) return;
 
       const headerRect = header.getBoundingClientRect();
-      const brandWidth = brand.offsetWidth;
-      const brandHeight = brand.offsetHeight;
-      const originWidth = origin.offsetWidth;
-      const originHeight = origin.offsetHeight;
-      if (!brandWidth || !brandHeight || !originWidth || !originHeight) return;
+      const brandWord = brand.querySelector("strong");
+      const brandWordRect = brandWord?.getBoundingClientRect();
+      const currentFontSize = Number.parseFloat(window.getComputedStyle(brandWord).fontSize);
+      const targetFontSize = Number.parseFloat(window.getComputedStyle(brand).getPropertyValue("--brand-font-size"));
+      if (!brandWordRect?.width || !currentFontSize || !targetFontSize) return;
 
-      let originLeft = 0;
-      let originTop = 0;
-      let originNode = origin;
-      while (originNode && originNode !== heroSticky) {
-        originLeft += originNode.offsetLeft;
-        originTop += originNode.offsetTop;
-        originNode = originNode.offsetParent;
-      }
-      if (originNode !== heroSticky) return;
+      const originRect = origin.getBoundingClientRect();
+      const heroStickyRect = heroSticky.getBoundingClientRect();
+      const originLeft = originRect.left - heroStickyRect.left;
+      const originTop = originRect.top - heroStickyRect.top;
+      const originFontSize = originRect.width * currentFontSize / brandWordRect.width;
 
-      const targetCenterX = headerRect.left + headerRect.width / 2;
-      const targetCenterY = headerRect.top + headerRect.height / 2;
       setBrandOrigin({
-        x: originLeft + originWidth / 2 - targetCenterX,
-        y: originTop + originHeight / 2 - targetCenterY,
-        scaleX: originWidth / brandWidth,
-        scaleY: originHeight / brandHeight,
+        x: originLeft - (headerRect.left + brand.offsetLeft),
+        y: originTop - (headerRect.top + brand.offsetTop),
       });
+      brandFontRange.current = { from: originFontSize, to: targetFontSize };
+      const amount = Math.min(Math.max(heroScrollProgress.get() / 0.16, 0), 1);
+      brand.style.setProperty("--brand-live-font-size", `${originFontSize + (targetFontSize - originFontSize) * amount}px`);
     };
 
     const frame = window.requestAnimationFrame(measureBrandOrigin);
@@ -494,7 +496,7 @@ function Header({ language, setLanguage, copy, heroScrollProgress }) {
       window.cancelAnimationFrame(frame);
       window.removeEventListener("resize", measureBrandOrigin);
     };
-  }, []);
+  }, [heroScrollProgress]);
 
   useEffect(() => {
     document.body.classList.toggle("menu-open", menuOpen);
@@ -510,7 +512,7 @@ function Header({ language, setLanguage, copy, heroScrollProgress }) {
 
   return (
     <>
-      <header className="site-header">
+      <motion.header className="site-header" style={{ backgroundColor: headerBackground, borderBottomColor: headerBorder }}>
         <button className="menu-toggle" type="button" onClick={() => setMenuOpen(true)} aria-label={language === "zh" ? "打開選單" : "Open menu"} aria-expanded={menuOpen}>
           <Equals size={42} weight="thin" aria-hidden="true" />
         </button>
@@ -519,7 +521,7 @@ function Header({ language, setLanguage, copy, heroScrollProgress }) {
           href="#top"
           aria-label="RNG home"
           ref={brandRef}
-          style={{ x: brandX, y: brandY, scaleX: brandScaleX, scaleY: brandScaleY }}
+          style={{ x: brandX, y: brandY }}
         >
           <strong>RNG</strong>
         </motion.a>
@@ -529,7 +531,7 @@ function Header({ language, setLanguage, copy, heroScrollProgress }) {
           </button>
           <a className="header-contact" href="#contact">CONTACT US</a>
         </div>
-      </header>
+      </motion.header>
       <AnimatePresence>
         {menuOpen && (
           <motion.div className="menu-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: reduceMotion ? 0.01 : 0.35 }} role="dialog" aria-modal="true" aria-label={language === "zh" ? "選單" : "Menu"}>
@@ -563,7 +565,7 @@ function Hero({ copy, onVideoReady, sectionRef, scrollYProgress }) {
   const reduceMotion = useReducedMotion();
   const videoRef = useRef(null);
   const pendingProgress = useRef(0);
-  const titleBlockOpacity = useTransform(scrollYProgress, [0, 0.1, 0.17], [1, 1, 0]);
+  const titleBlockBackground = useTransform(scrollYProgress, [0, 0.16], ["rgba(247, 247, 243, 1)", "rgba(247, 247, 243, 0)"]);
 
   const seekVideo = (progress) => {
     pendingProgress.current = progress;
@@ -585,7 +587,7 @@ function Hero({ copy, onVideoReady, sectionRef, scrollYProgress }) {
       <div className="hero-sticky">
         <video ref={videoRef} className="hero-video" src={renaissanceVideo} muted playsInline preload="auto" onLoadedMetadata={handleVideoReady} onCanPlay={onVideoReady} aria-label={copy.hero.artAlt} />
         <div className="hero-scrim" aria-hidden="true" />
-        <motion.div className="hero-title-block" style={{ opacity: titleBlockOpacity }} initial={reduceMotion ? false : { clipPath: "inset(0 100% 0 0)" }} animate={{ clipPath: "inset(0 0% 0 0)" }} transition={{ duration: reduceMotion ? 0.01 : 1.05, delay: reduceMotion ? 0 : 0.18, ease: [0.76, 0, 0.24, 1] }}>
+        <motion.div className="hero-title-block" style={{ backgroundColor: titleBlockBackground }} initial={reduceMotion ? false : { clipPath: "inset(0 100% 0 0)" }} animate={{ clipPath: "inset(0 0% 0 0)" }} transition={{ duration: reduceMotion ? 0.01 : 1.05, delay: reduceMotion ? 0 : 0.18, ease: [0.76, 0, 0.24, 1] }}>
           <h1 id="hero-title" className="hero-brand-origin" aria-label="RNG">RNG</h1>
         </motion.div>
       </div>
