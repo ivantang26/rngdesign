@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "vite --host 0.0.0.0",
     "build": "vite build",
-    "preview": "vite preview --host 0.0.0.0"
+    "preview": "vite preview --host 0.0.0.0",
+    "test:demo": "npm run build && node tests/demo.mjs"
   },
   "dependencies": {
     "@phosphor-icons/react": "^2.1.10",

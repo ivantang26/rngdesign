@@ -1,955 +1,227 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import {
-  ArrowUpRight,
-  CaretDown,
-  ChatCircleText,
-  Check,
-  Clock,
-  Equals,
-  MapPin,
-  Phone,
-  Storefront,
-  TrendUp,
-  User,
-  Wrench,
-  X,
+  AddressBook, ArrowDown, ArrowUpRight, Bank, CalendarBlank, CaretDown,
+  ChartLineUp, Check, CheckCircle, Clock, Desktop, DeviceMobile, FileText,
+  Gauge, List, LockKey, Megaphone, Package, Receipt, Sparkle, UsersThree,
+  Warning, X,
 } from "@phosphor-icons/react";
-import { AnimatePresence, motion, useMotionValueEvent, useReducedMotion, useScroll, useTransform } from "motion/react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
+import {
+  CONTENT_CALENDAR, DEMO_SITES, FAQ_KEYS, LOOP_STEPS, MODULES, PNL_ROWS,
+  REVENUE_CURVES, ROTA_SHIFTS, SITE_CONFIG, TEXT,
+} from "./demoData";
 import "./styles.css";
-import renaissanceVideo from "../image/renaissance_editorial_explainer.mp4";
 
-const SITE_CONFIG = {
-  whatsappNumber: "",
-  phoneDisplay: "",
-  phoneHref: "",
-  email: "",
-  wechatId: "",
-  wechatQr: "",
-  companyName: "[Ltd 名待補] trading as RNG",
-  media: {
-    hero: "/images/generated/renaissance-hero.webp",
-    heroSmall: "/images/generated/renaissance-hero-768.webp",
-    caseStages: ["", "", "", ""],
-    founder: "",
-    process: "/images/generated/process-drawing.webp",
-    processSmall: "/images/generated/process-drawing-720.webp",
-    materials: "/images/generated/material-still-life.webp",
-    materialsSmall: "/images/generated/material-still-life-640.webp",
-    boundaries: "/images/generated/enquiry-materials.webp",
-    boundariesSmall: "/images/generated/enquiry-materials-640.webp",
-    references: {
-      hongKongFrontage: "/images/references/past-hong-kong-ma-wan-frontage.webp",
-      hongKongGarden: "/images/references/past-hong-kong-ma-wan-garden-room.webp",
-      glasgowCounter: "/images/references/past-uk-glasgow-matcha-counter.webp",
-      glasgowFrontage: "/images/references/past-uk-glasgow-matcha-frontage.webp",
-      vidaCoffee: "/images/references/past-studio-vida-coffee.webp",
-    },
-  },
-};
+const MODULE_ICONS = { forecast: ChartLineUp, workforce: UsersThree, inventory: Package, finance: Bank, crm: AddressBook, marketing: Megaphone };
+const LOOP_ICONS = { forecast: ChartLineUp, rota: UsersThree, inventory: Package, reconcile: Receipt, report: FileText };
+const currency = new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", maximumFractionDigits: 0 });
+const percent = new Intl.NumberFormat("en-GB", { style: "percent", signDisplay: "exceptZero", maximumFractionDigits: 1 });
 
-const WHATSAPP_MESSAGE = {
-  zh: "你好 Tony，我喺 RNG 網站見到你。我間舖喺＿＿，想傾下＿＿",
-  en: "Hi Tony, I found you through the RNG website. My shop is in __, and I would like to talk about __.",
-};
-
-const COPY = {
-  zh: {
-    pageTitle: "RNG｜開舖・旺舖・慳人手｜Leeds 餐飲舖項目拍檔",
-    pageDescription: "自己開過舖嘅餐飲項目拍檔，幫你開新店、執靚間舖同慳人手。Leeds 出發，數碼項目全國都做。",
-    skip: "跳到主要內容",
-    brandTagline: "開舖・旺舖・慳人手",
-    langLabel: "SELECT",
-    nav: [
-      ["真店", "#case"],
-      ["過往參考", "#past"],
-      ["點樣行", "#process"],
-      ["三樣嘢", "#services"],
-      ["Tony", "#about"],
-      ["FAQ", "#faq"],
-    ],
-    whatsappShort: "WhatsApp 我",
-    hero: {
-      artAlt: "暖白石灰牆與胡桃木壁龕內的文藝復興風格大理石雕像",
-    },
-    caseStudy: {
-      eyebrow: "真店證據",
-      title: "唔講概念，睇我自己行過嘅每一步。",
-      body: "呢兩間舖由零到開門係我自己做嘅：搵舖、談 lease、8-9 週裝修、品牌、餐牌、POS、website、app、請人、每個月自己睇 P&L。你間舖嘅每一步，我都行過。",
-      stages: ["空殼", "裝修中", "完工", "營業中"],
-      imagePending: "M+ 真相待補",
-      note: "相大過字，因為做過比講過更有說服力。",
-    },
-    past: {
-      title: "俾 Leeds 做店嘅過往參考。",
-      intro: "由香港、英國到品牌視覺，揀幾張相留下空間、材料同動線嘅重點。唔放成份 deck，只帶走值得用嘅細節。",
-      items: [
-        ["香港／馬灣", "茶飲店內外", "淺色門面、樹蔭同室內外連接，令細店都有一個自然嘅入口。", SITE_CONFIG.media.references.hongKongFrontage, "大樹下的淺色茶飲店門面，前方有遮棚、玻璃門和綠化。"],
-        ["香港／馬灣", "有樹嘅休憩位", "座位圍住樹同窗邊展開，俾客人停留得耐啲，亦令公共空間有生活感。", SITE_CONFIG.media.references.hongKongGarden, "玻璃天幕下的室內花園休憩區，樹木和座位圍繞中央桌台。"],
-        ["英國／格拉斯哥", "M plus matcha", "深木、抹茶綠同一條清楚嘅服務動線，將小店做出完整體驗。", SITE_CONFIG.media.references.glasgowCounter, "格拉斯哥 M plus matcha 店內的深木色吧檯、綠色天花和展示牆。"],
-        ["英國／格拉斯哥", "街舖門面", "門面、招牌同室內燈光一齊工作，客人未入門已經知道間舖係乜。", SITE_CONFIG.media.references.glasgowFrontage, "格拉斯哥 M plus matcha 店的街舖門面和玻璃入口。"],
-        ["品牌參考／YE4 LAB", "Vida Coffee", "一套有節奏嘅包裝系統，將咖啡品牌由一包豆帶到每個接觸點。", SITE_CONFIG.media.references.vidaCoffee, "Vida Coffee 的包裝、杯、卡片和品牌物料排列在淺色桌面上。"],
-      ],
-    },
-    process: {
-      eyebrow: "點樣行",
-      title: "每一步講清楚，你隨時知錢用咗去邊。",
-      steps: [
-        ["01", "睇舖傾偈", "免費，先睇清楚最痛嗰樣。"],
-        ["02", "出計劃", "一條 timeline、一份預算、固定費。"],
-        ["03", "落地", "按 50 / 30 / 20 分期，唔估鐘。"],
-        ["04", "開張跟數", "30-60-90 日睇營運同數字。"],
-        ["05", "長期夥伴", "要先再做，唔綁無謂服務。"],
-      ],
-      responsibility: "工程由合資格承建商承接及負責；我係你嘅單一負責窗口。",
-      report: "每星期你收一頁報告：使咗幾多、去到邊、下週做乜。",
-    },
-    services: {
-      eyebrow: "三樣嘢",
-      title: "由你而家最痛嗰樣開始。",
-      intro: "唔使一次過買晒。免費睇舖後，我會先講清楚咩要做、咩可以遲啲。",
-      items: [
-        {
-          number: "01",
-          title: "執靚間舖",
-          problem: "舖殘咗？生意跌咗？客搵唔到你？",
-          answer: "翻新＋餐牌＋Google＋website 一次過執好。",
-          price: "Fixed fee・免費診斷後報實價",
-        },
-        {
-          number: "02",
-          title: "開新店／接手",
-          problem: "簽咗舖唔知點開始？",
-          answer: "由空殼到開門，一條 timeline 一份預算搞掂。",
-          price: "Fixed fee・免費傾完先報價",
-        },
-        {
-          number: "03",
-          title: "慳人手",
-          problem: "電話接到漏單？",
-          answer: "AI 接單、訂座、報表，裝好自己行（全國都做）。",
-          price: "Setup＋月費",
-        },
-      ],
-      qualifier: "有真項目、有預算，先約。我哋唔做齋傾。",
-      cta: "俾我睇下你間舖",
-    },
-    about: {
-      eyebrow: "真人負責",
-      title: "我係 Tony。自己落過場，先知老闆最怕漏咩。",
-      body: "我自己由零開始做過兩間舖，搵舖、裝修、品牌、餐牌、POS、website、app、請人同每月 P&L 都親手行過。RNG 唔係企喺旁邊俾意見；我會幫你將預算、時間表同每個合作團隊拉返埋一條線，直到間舖開門、營運同數字行順。",
-      location: "Leeds 地面・digital 全國",
-      portrait: "Tony 店內半身真相",
-      portraitPending: "真人相待補",
-    },
-    boundaries: {
-      eyebrow: "三樣我哋唔做",
-      title: "信任由界線清楚開始。",
-      artAlt: "暖白石材、深色胡桃木與天然布料的材質組合",
-      items: [
-        ["唔係承建商", "工程由合資格承建商承接同負責。"],
-        ["唔代你決定開唔開", "盤生意係你嘅，我會俾你睇清風險同數字。"],
-        ["唔賣你唔需要嘅嘢", "計劃書寫明先做乜、後做乜、唔使做乜。"],
-      ],
-    },
-    faq: {
-      eyebrow: "常見問題",
-      title: "傾之前，先答你最實際嗰四樣。",
-      items: [
-        ["收幾錢？", "免費上門診斷後報實價，全部 fixed fee 分期，冇時薪冇隱藏收費。"],
-        ["邊個施工？", "合資格承建商同專業團隊；我負責設計、預算、時間表、全程統籌。"],
-        ["你哋喺邊？", "Leeds 出發北英地面；網站、系統、AI 全國。"],
-        ["我間舖好細，做唔做？", "做。分階段買，由最痛嗰樣開始。"],
-      ],
-    },
-    finalCta: {
-      eyebrow: "免費 30 分鐘上門診斷",
-      title: "你講間舖最頭痛嗰樣，我先幫你睇清楚。",
-      body: "唔啱做，我會直接講。啱做先出 fixed-fee 計劃。",
-      cta: "WhatsApp Tony",
-    },
-    footer: {
-      phone: "電話",
-      wechat: "微信",
-      email: "Email",
-      pending: "資料待補",
-      qr: "打開微信 QR",
-      privacy: "私隱",
-      terms: "條款",
-      privacyText: "RNG 只會用你主動透過 WhatsApp、電話、微信或 email 提供嘅資料回覆查詢，唔會出售個人資料。正式版本待公司資料確認後補上。",
-      termsText: "網站內容只供一般參考；任何項目範圍、費用、時間表同責任，以雙方簽署嘅計劃書及合約為準。",
-      backToTop: "返頁頂",
-      stickyLabel: "免費上門診斷",
-    },
-    qrModal: {
-      title: "微信搵我",
-      pending: "微信 QR 待補",
-      hint: "Tony 提供微信 ID 後，將 QR 圖放入網站設定即可。",
-      close: "關閉",
-    },
-  },
-  en: {
-    pageTitle: "RNG - Open, Upgrade & Automate Your Shop, Leeds",
-    pageDescription: "A hands-on partner for independent hospitality owners opening, upgrading or automating a shop. Leeds on site, digital projects nationwide.",
-    skip: "Skip to main content",
-    brandTagline: "Open · Upgrade · Automate",
-    langLabel: "SELECT",
-    nav: [
-      ["Real shop", "#case"],
-      ["Past refs", "#past"],
-      ["Process", "#process"],
-      ["What I do", "#services"],
-      ["Tony", "#about"],
-      ["FAQ", "#faq"],
-    ],
-    whatsappShort: "WhatsApp me",
-    hero: {
-      artAlt: "Renaissance-inspired marble sculpture in a warm white plaster and walnut studio",
-    },
-    caseStudy: {
-      eyebrow: "Real-world proof",
-      title: "No theory. I have walked every step myself.",
-      body: "I built these two shops from zero to opening: site search, lease negotiation, an 8-9 week fit-out, brand, menu, POS, website, app, hiring and the monthly P&L. I have already walked every step your shop will take.",
-      stages: ["Empty shell", "Fit-out", "Finished", "Trading"],
-      imagePending: "M+ real photo pending",
-      note: "The photographs lead because doing the work matters more than describing it.",
-    },
-    past: {
-      title: "Past references for Leeds work.",
-      intro: "Selected images from Hong Kong, Glasgow and brand practice. The decks stay behind. The details worth carrying forward come first.",
-      items: [
-        ["Hong Kong / Ma Wan", "Tea shop, inside and out", "A light frontage, mature planting and a clear connection between the shop and the street.", SITE_CONFIG.media.references.hongKongFrontage, "Light tea shop frontage beneath a mature tree with a canopy, glass doors and planting."],
-        ["Hong Kong / Ma Wan", "A garden room", "A planted seating landscape gives people a reason to stay, not just a reason to order.", SITE_CONFIG.media.references.hongKongGarden, "A garden-like seating area beneath a glass roof, with trees, tables and rounded stools."],
-        ["UK / Glasgow", "M plus matcha", "Dark timber, matcha green and a clear service line make a compact shop feel complete.", SITE_CONFIG.media.references.glasgowCounter, "M plus matcha counter in Glasgow with dark timber, green ceiling detail and a patterned floor."],
-        ["UK / Glasgow", "The street frontage", "Signage, glazing and warm interior light do the work before the customer reaches the door.", SITE_CONFIG.media.references.glasgowFrontage, "M plus matcha shopfront in Glasgow with a lit sign, glazed entrance and street posters."],
-        ["Brand reference / YE4 LAB", "Vida Coffee", "A disciplined packaging system that carries a coffee brand across every useful touchpoint.", SITE_CONFIG.media.references.vidaCoffee, "Vida Coffee packaging, cards and cups arranged on a pale surface."],
-      ],
-    },
-    process: {
-      eyebrow: "How it works",
-      title: "A clear route from first visit to opening day.",
-      steps: [
-        ["01", "Visit and listen", "Free. We identify the most urgent problem first."],
-        ["02", "Build the plan", "One timeline, one budget and a fixed fee."],
-        ["03", "Deliver", "Pay in 50 / 30 / 20 stages, never by the hour."],
-        ["04", "Open and measure", "Review operations and numbers at 30-60-90 days."],
-        ["05", "Stay useful", "Continue only where the business needs it."],
-      ],
-      responsibility: "Qualified contractors carry out and take responsibility for construction; I remain your single point of contact.",
-      report: "Every week you receive one page: money spent, current status and next week’s work.",
-    },
-    services: {
-      eyebrow: "Three ways I help",
-      title: "Start with the problem costing you most.",
-      intro: "You do not need to buy everything at once. After the free visit, I will separate what matters now from what can wait.",
-      items: [
-        {
-          number: "01",
-          title: "Upgrade your shop",
-          problem: "Tired space? Falling trade? Hard to find online?",
-          answer: "Fit-out, menu, Google and website fixed as one joined-up project.",
-          price: "Fixed fee・firm quote after the free visit",
-        },
-        {
-          number: "02",
-          title: "Open or take over",
-          problem: "Signed the lease and not sure where to start?",
-          answer: "From empty shell to open doors with one timeline and one budget.",
-          price: "Fixed fee・quote after a free conversation",
-        },
-        {
-          number: "03",
-          title: "Reduce admin",
-          problem: "Missing orders while the phone keeps ringing?",
-          answer: "AI ordering, bookings and reporting that keep working after setup.",
-          price: "Setup＋monthly fee",
-        },
-      ],
-      qualifier: "Real project and real budget required. I do not sell open-ended consultancy.",
-      cta: "Show me your shop",
-    },
-    about: {
-      eyebrow: "Founder led",
-      title: "I’m Tony. Running my own shops taught me what owners cannot afford to miss.",
-      body: "I have built two shops from zero, handling the site search, fit-out, brand, menu, POS, website, app, hiring and monthly P&L. RNG is not advice from the sidelines. I bring the budget, timeline and specialist teams onto one line, then stay close until the doors are open and the operation is working.",
-      location: "Leeds on site・digital nationwide",
-      portrait: "Tony inside his own shop",
-      portraitPending: "Founder photo pending",
-    },
-    boundaries: {
-      eyebrow: "Three things I do not do",
-      title: "Trust starts with clear boundaries.",
-      artAlt: "Warm white stone, dark walnut and natural linen material study",
-      items: [
-        ["I am not the contractor", "Qualified contractors carry out and take responsibility for construction."],
-        ["I will not decide whether you should open", "It is your business. I make the risks and numbers clear."],
-        ["I will not sell work you do not need", "The plan states what comes first, what comes later and what to skip."],
-      ],
-    },
-    faq: {
-      eyebrow: "Questions",
-      title: "The four practical answers owners ask for first.",
-      items: [
-        ["What does it cost?", "After the free shop visit, I give you a firm price. Every project uses staged fixed fees, with no hourly billing or hidden charges."],
-        ["Who carries out construction?", "Qualified contractors and specialist teams. I coordinate design, budget, programme and delivery."],
-        ["Where do you work?", "Leeds and the North of England on site; websites, systems and AI nationwide."],
-        ["My shop is small. Will you take it on?", "Yes. Work can be phased, starting with the problem that hurts most."],
-      ],
-    },
-    finalCta: {
-      eyebrow: "Free 30-minute shop visit",
-      title: "Tell me what is costing your shop most. I’ll help you see it clearly.",
-      body: "If I am not the right fit, I will say so. If I am, the next step is a fixed-fee plan.",
-      cta: "WhatsApp Tony",
-    },
-    footer: {
-      phone: "Phone",
-      wechat: "WeChat",
-      email: "Email",
-      pending: "Details pending",
-      qr: "Open WeChat QR",
-      privacy: "Privacy",
-      terms: "Terms",
-      privacyText: "RNG only uses information you choose to provide by WhatsApp, phone, WeChat or email to answer your enquiry. We do not sell personal data. A full notice will follow when the company details are confirmed.",
-      termsText: "Website content is general information only. The signed project plan and contract define the final scope, fees, programme and responsibilities.",
-      backToTop: "Back to top",
-      stickyLabel: "Free shop visit",
-    },
-    qrModal: {
-      title: "Find me on WeChat",
-      pending: "WeChat QR pending",
-      hint: "Add Tony’s QR image to the site configuration once the WeChat ID is supplied.",
-      close: "Close",
-    },
-  },
-};
-
-function buildWhatsAppUrl(language) {
-  const number = SITE_CONFIG.whatsappNumber.replace(/\D/g, "");
-  const destination = number ? `https://wa.me/${number}` : "https://wa.me/";
-  return `${destination}?text=${encodeURIComponent(WHATSAPP_MESSAGE[language])}`;
-}
-
-function trackWhatsApp(location) {
-  window.dataLayer = window.dataLayer || [];
-  window.dataLayer.push({ event: "whatsapp_click", location });
-  window.dispatchEvent(new CustomEvent("rng:whatsapp-click", { detail: { location } }));
-}
-
-const ResponsiveMotionContext = React.createContext({ compact: false });
-
-function useResponsiveMotionProfile() {
-  const [compact, setCompact] = useState(() => typeof window !== "undefined" && window.matchMedia("(max-width: 720px)").matches);
-
-  useEffect(() => {
-    const query = window.matchMedia("(max-width: 720px)");
-    const update = () => setCompact(query.matches);
-    update();
-    query.addEventListener("change", update);
-    return () => query.removeEventListener("change", update);
-  }, []);
-
-  return useMemo(() => ({ compact }), [compact]);
+function siteName(site, language) {
+  if (site.id === "group") return language === "zh" ? "全部分店" : site.name;
+  return site.name;
 }
 
 function Reveal({ children, className = "", delay = 0 }) {
   const reduceMotion = useReducedMotion();
-  const { compact } = React.useContext(ResponsiveMotionContext);
-  return (
-    <motion.div
-      className={className}
-      initial={reduceMotion ? false : { opacity: 0, y: compact ? 14 : 26 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: compact ? 0.08 : 0.14 }}
-      transition={{ duration: compact ? 0.46 : 0.64, delay: compact ? delay * 0.65 : delay, ease: [0.16, 1, 0.3, 1] }}
-    >
-      {children}
-    </motion.div>
-  );
+  return <motion.div className={className} initial={reduceMotion ? false : { opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.16 }} transition={{ duration: reduceMotion ? 0 : 0.58, delay, ease: [0.16, 1, 0.3, 1] }}>{children}</motion.div>;
 }
 
-function WhatsAppButton({ language, label, location, compact = false, inverse = false }) {
-  return (
-    <a
-      className={`whatsapp-button ${compact ? "compact" : ""} ${inverse ? "inverse" : ""}`}
-      href={buildWhatsAppUrl(language)}
-      target="_blank"
-      rel="noreferrer"
-      onClick={() => trackWhatsApp(location)}
-      data-ga-event="whatsapp_click"
-    >
-      <ChatCircleText aria-hidden="true" size={compact ? 18 : 21} weight="fill" />
-      <span>{label}</span>
-      {!compact && <ArrowUpRight aria-hidden="true" size={19} />}
-    </a>
-  );
+function SampleLabel({ children }) {
+  return <span className="sample-label"><Sparkle size={13} weight="fill" aria-hidden="true" />{children}</span>;
 }
 
-function MediaPlaceholder({ src = "", label, pending, portrait = false }) {
-  if (src) return <img className={`real-media ${portrait ? "portrait" : ""}`} src={src} alt={label} />;
-  return (
-    <div className={`media-placeholder ${portrait ? "portrait" : ""}`} role="img" aria-label={`${label} - ${pending}`}>
-      <span className="placeholder-mark" aria-hidden="true">RNG</span>
-      <span className="placeholder-label">{label}</span>
-      <span className="placeholder-status">{pending}</span>
-    </div>
-  );
+function SparkBars({ values, label }) {
+  const max = Math.max(...values);
+  return <div className="spark-bars" role="img" aria-label={label}>{values.map((value, index) => <motion.i key={`${index}-${value}`} initial={{ scaleY: 0 }} animate={{ scaleY: value / max }} transition={{ duration: 0.38, delay: index * 0.018, ease: [0.16, 1, 0.3, 1] }} />)}</div>;
 }
 
-function Loader({ ready, onComplete }) {
-  const [progress, setProgress] = useState(8);
-  const reduceMotion = useReducedMotion();
-
-  useEffect(() => {
-    const steps = [
-      window.setTimeout(() => setProgress(34), reduceMotion ? 20 : 360),
-      window.setTimeout(() => setProgress(68), reduceMotion ? 40 : 820),
-      window.setTimeout(() => setProgress(86), reduceMotion ? 60 : 1320),
-    ];
-    return () => steps.forEach(window.clearTimeout);
-  }, [reduceMotion]);
-
-  useEffect(() => {
-    if (!ready) return undefined;
-    const finish = window.setTimeout(() => setProgress(100), reduceMotion ? 20 : 240);
-    const dismiss = window.setTimeout(onComplete, reduceMotion ? 80 : 920);
-    return () => {
-      window.clearTimeout(finish);
-      window.clearTimeout(dismiss);
-    };
-  }, [onComplete, ready, reduceMotion]);
-
-  return (
-    <motion.div
-      className="rng-loader"
-      initial={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      transition={{ duration: reduceMotion ? 0.01 : 0.55, ease: [0.76, 0, 0.24, 1] }}
-      aria-label={`Loading RNG, ${progress}%`}
-    >
-      <div className="loader-ghost" aria-hidden="true">RNG</div>
-      <motion.div
-        className="loader-card"
-        initial={reduceMotion ? false : { opacity: 0, scale: 0.96 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-      >
-        <strong>RNG</strong>
-        <span>{progress}%</span>
-        <i aria-hidden="true" style={{ transform: `scaleX(${progress / 100})` }} />
-      </motion.div>
-    </motion.div>
-  );
-}
-
-function Header({ language, copy, heroScrollProgress }) {
+function Header({ language, onToggleLanguage }) {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [brandOrigin, setBrandOrigin] = useState({ x: 0, y: 0 });
-  const brandRef = useRef(null);
-  const brandFontRange = useRef({ from: 16, to: 16 });
-  const reduceMotion = useReducedMotion();
-
-  const brandX = useTransform(heroScrollProgress, [0, 0.16], [brandOrigin.x, 0]);
-  const brandY = useTransform(heroScrollProgress, [0, 0.16], [brandOrigin.y, 0]);
-  const headerBackground = useTransform(heroScrollProgress, [0, 0.16], ["rgba(247, 247, 243, 1)", "rgba(247, 247, 243, 0)"]);
-  const headerBorder = useTransform(heroScrollProgress, [0, 0.16], ["rgba(17, 19, 24, 0.1)", "rgba(17, 19, 24, 0)"]);
-
-  useMotionValueEvent(heroScrollProgress, "change", (progress) => {
-    const { from, to } = brandFontRange.current;
-    const amount = Math.min(Math.max(progress / 0.16, 0), 1);
-    brandRef.current?.style.setProperty("--brand-live-font-size", `${from + (to - from) * amount}px`);
-  });
-
+  const copy = TEXT[language];
   useEffect(() => {
-    const measureBrandOrigin = () => {
-      const brand = brandRef.current;
-      const origin = document.querySelector(".hero-brand-origin");
-      const header = document.querySelector(".site-header");
-      const heroSticky = origin?.closest(".hero-sticky");
-      if (!brand || !origin || !header || !heroSticky) return;
-
-      const headerRect = header.getBoundingClientRect();
-      const brandWord = brand.querySelector("strong");
-      const brandWordRect = brandWord?.getBoundingClientRect();
-      const currentFontSize = Number.parseFloat(window.getComputedStyle(brandWord).fontSize);
-      const targetFontSize = Number.parseFloat(window.getComputedStyle(brand).getPropertyValue("--brand-font-size"));
-      if (!brandWordRect?.width || !currentFontSize || !targetFontSize) return;
-
-      const originRect = origin.getBoundingClientRect();
-      const heroStickyRect = heroSticky.getBoundingClientRect();
-      const originLeft = originRect.left - heroStickyRect.left;
-      const originTop = originRect.top - heroStickyRect.top;
-      const originFontSize = originRect.width * currentFontSize / brandWordRect.width;
-
-      setBrandOrigin({
-        x: originLeft - (headerRect.left + brand.offsetLeft),
-        y: originTop - (headerRect.top + brand.offsetTop),
-      });
-      brandFontRange.current = { from: originFontSize, to: targetFontSize };
-      const amount = Math.min(Math.max(heroScrollProgress.get() / 0.16, 0), 1);
-      brand.style.setProperty("--brand-live-font-size", `${originFontSize + (targetFontSize - originFontSize) * amount}px`);
-    };
-
-    const frame = window.requestAnimationFrame(measureBrandOrigin);
-    window.addEventListener("resize", measureBrandOrigin);
-    return () => {
-      window.cancelAnimationFrame(frame);
-      window.removeEventListener("resize", measureBrandOrigin);
-    };
-  }, [heroScrollProgress]);
-
-  useEffect(() => {
-    document.body.classList.toggle("menu-open", menuOpen);
-    const onKeyDown = (event) => {
-      if (event.key === "Escape") setMenuOpen(false);
-    };
-    if (menuOpen) window.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.body.classList.remove("menu-open");
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, [menuOpen]);
-
-  return (
-    <>
-      <motion.header className="site-header" style={{ backgroundColor: headerBackground, borderBottomColor: headerBorder }}>
-        <button className="menu-toggle" type="button" onClick={() => setMenuOpen(true)} aria-label={language === "zh" ? "打開選單" : "Open menu"} aria-expanded={menuOpen}>
-          <Equals size={42} weight="thin" aria-hidden="true" />
-        </button>
-        <motion.a
-          className="brand morph-brand"
-          href="#top"
-          aria-label="RNG home"
-          ref={brandRef}
-          style={{ x: brandX, y: brandY }}
-        >
-          <strong>RNG</strong>
-        </motion.a>
-        <div className="header-actions">
-          <a className="header-contact" href="#contact">CONTACT US</a>
-        </div>
-      </motion.header>
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div className="menu-overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: reduceMotion ? 0.01 : 0.35 }} role="dialog" aria-modal="true" aria-label={language === "zh" ? "選單" : "Menu"}>
-            <button className="menu-scrim" type="button" onClick={() => setMenuOpen(false)} aria-label={language === "zh" ? "關閉選單" : "Close menu"} />
-            <motion.div className="menu-sheet" initial={reduceMotion ? false : { x: "-104%" }} animate={{ x: 0 }} exit={{ x: "-104%" }} transition={{ duration: reduceMotion ? 0.01 : 0.72, ease: [0.76, 0, 0.24, 1] }}>
-              <img src={SITE_CONFIG.media.hero} alt="" aria-hidden="true" />
-              <div className="menu-head">
-                <button type="button" onClick={() => setMenuOpen(false)} aria-label={language === "zh" ? "關閉選單" : "Close menu"}><X size={38} weight="thin" /></button>
-                <strong>RNG</strong>
-              </div>
-              <nav className="menu-links" aria-label="Primary navigation">
-                {copy.nav.map(([label, href], index) => (
-                  <motion.a href={href} onClick={() => setMenuOpen(false)} key={href} initial={reduceMotion ? false : { opacity: 0, x: -18 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: reduceMotion ? 0 : 0.22 + index * 0.055 }}>
-                    {label}
-                  </motion.a>
-                ))}
-              </nav>
-              <div className="menu-actions">
-                <WhatsAppButton language={language} label={copy.whatsappShort} location="menu" compact />
-                <a href="#services" onClick={() => setMenuOpen(false)}>{language === "zh" ? "睇服務" : "View services"}</a>
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </>
-  );
-}
-
-function Hero({ copy, onVideoReady, sectionRef, scrollYProgress }) {
-  const reduceMotion = useReducedMotion();
-  const videoRef = useRef(null);
-  const pendingProgress = useRef(0);
-  const titleBlockBackground = useTransform(scrollYProgress, [0, 0.16], ["rgba(247, 247, 243, 1)", "rgba(247, 247, 243, 0)"]);
-
-  const seekVideo = (progress) => {
-    pendingProgress.current = progress;
-    const video = videoRef.current;
-    if (!video || !Number.isFinite(video.duration)) return;
-    const duration = Math.max(0, video.duration - 0.04);
-    video.currentTime = reduceMotion ? 0 : progress * duration;
-  };
-
-  useMotionValueEvent(scrollYProgress, "change", seekVideo);
-
-  const handleVideoReady = () => {
-    seekVideo(pendingProgress.current);
-    onVideoReady();
-  };
-
-  return (
-    <section className="hero" id="top" aria-labelledby="hero-title" ref={sectionRef}>
-      <div className="hero-sticky">
-        <video ref={videoRef} className="hero-video" src={renaissanceVideo} muted playsInline preload="auto" onLoadedMetadata={handleVideoReady} onCanPlay={onVideoReady} aria-label={copy.hero.artAlt} />
-        <div className="hero-scrim" aria-hidden="true" />
-        <motion.div className="hero-title-block" style={{ backgroundColor: titleBlockBackground }} initial={reduceMotion ? false : { clipPath: "inset(0 100% 0 0)" }} animate={{ clipPath: "inset(0 0% 0 0)" }} transition={{ duration: reduceMotion ? 0.01 : 1.05, delay: reduceMotion ? 0 : 0.18, ease: [0.76, 0, 0.24, 1] }}>
-          <h1 id="hero-title" className="hero-brand-origin" aria-label="RNG">RNG</h1>
-        </motion.div>
-      </div>
-    </section>
-  );
-}
-
-function CaseStudy({ copy }) {
-  return (
-    <section className="case-section section-block" id="case" aria-labelledby="case-title">
-      <div className="page-shell case-board">
-        <div className="case-statement">
-          <Reveal className="case-heading">
-            <h2 id="case-title">{copy.caseStudy.title}</h2>
-          </Reveal>
-          <Reveal className="case-description" delay={0.08}>
-            <p>{copy.caseStudy.body}</p>
-          </Reveal>
-        </div>
-        <div className="case-grid" aria-label="M+ project stages">
-          {copy.caseStudy.stages.map((stage, index) => (
-            <Reveal className="case-frame" delay={index * 0.06} key={stage}>
-              <div className="case-frame-head"><span>0{index + 1}</span><strong>{stage}</strong></div>
-              <MediaPlaceholder src={SITE_CONFIG.media.caseStages[index]} label={stage} pending={copy.caseStudy.imagePending} />
-            </Reveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function PastReferences({ copy }) {
-  return (
-    <section className="past-section section-block" id="past" aria-labelledby="past-title">
-      <div className="page-shell past-board">
-        <div className="past-heading">
-          <Reveal>
-            <h2 id="past-title">{copy.past.title}</h2>
-          </Reveal>
-          <Reveal delay={0.08}>
-            <p>{copy.past.intro}</p>
-          </Reveal>
-        </div>
-        <div className="past-grid">
-          {copy.past.items.map(([location, title, body, image, alt], index) => (
-            <Reveal className={`past-item past-item-${index + 1}`} delay={index * 0.05} key={`${location}-${title}`}>
-              <figure>
-                <img src={image} alt={alt} loading="lazy" />
-                <figcaption>
-                  <span>{location}</span>
-                  <h3>{title}</h3>
-                  <p>{body}</p>
-                </figcaption>
-              </figure>
-            </Reveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function ProcessSection({ language, copy }) {
-  const icons = [Storefront, TrendUp, Wrench, Clock, User];
-  const [activeStage, setActiveStage] = useState(0);
-  const reduceMotion = useReducedMotion();
-  const [number, title, body] = copy.process.steps[activeStage];
-  const ActiveIcon = icons[activeStage];
-  return (
-    <section className="process-section section-block" id="process" aria-labelledby="process-title">
-      <div className="page-shell">
-        <div className="process-heading">
-          <Reveal><h2 id="process-title">{copy.process.title}</h2></Reveal>
-          <Reveal delay={0.08}><p>{copy.process.report}</p></Reveal>
-        </div>
-        <div className="process-board">
-          <aside className="process-rail" aria-label={copy.process.eyebrow}>
-            <span className="rail-label">{copy.process.eyebrow}</span>
-            {copy.process.steps.map(([stepNumber, stepTitle], index) => {
-              const Icon = icons[index];
-              return (
-                <button type="button" className={index === activeStage ? "active" : ""} onClick={() => setActiveStage(index)} aria-pressed={index === activeStage} key={stepNumber}>
-                  {index === activeStage && <motion.span className="process-active-marker" layoutId="process-active-marker" aria-hidden="true" transition={{ duration: reduceMotion ? 0 : 0.28, ease: [0.16, 1, 0.3, 1] }} />}
-                  <span>{stepNumber}</span>
-                  <Icon aria-hidden="true" size={18} />
-                  <strong>{stepTitle}</strong>
-                </button>
-              );
-            })}
-          </aside>
-          <div className="process-canvas">
-            <Reveal className="process-visual">
-              <img src={SITE_CONFIG.media.process} srcSet={`${SITE_CONFIG.media.processSmall} 720w, ${SITE_CONFIG.media.process} 1672w`} sizes="(max-width: 900px) calc(100vw - 40px), 1040px" width="1672" height="941" alt={language === "zh" ? "胡桃木桌上擺放平面圖、石材與布料樣板" : "Plans, stone and fabric samples arranged on a walnut worktable"} loading="lazy" />
-            </Reveal>
-            <div className="process-detail-grid">
-              <AnimatePresence mode="wait" initial={false}>
-                <motion.article className="active-stage" key={`${language}-${number}`} initial={reduceMotion ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: -8 }} transition={{ duration: reduceMotion ? 0 : 0.22 }}>
-                  <div className="active-stage-meta"><span>{number}</span><ActiveIcon aria-hidden="true" size={26} /></div>
-                  <h3>{title}</h3>
-                  <p>{body}</p>
-                </motion.article>
-              </AnimatePresence>
-              <div className="process-report-card">
-                <span>{language === "zh" ? "每週一頁" : "One page weekly"}</span>
-                <strong>{copy.process.report}</strong>
-              </div>
-              <div className="process-responsibility">
-                <Check size={21} weight="bold" aria-hidden="true" />
-                <p>{copy.process.responsibility}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function ServicesSection({ language, copy }) {
-  return (
-    <section className="services-section section-block" id="services" aria-labelledby="services-title">
-      <div className="page-shell">
-        <div className="section-intro stacked-intro services-intro">
-          <Reveal>
-            <h2 id="services-title">{copy.services.title}</h2>
-          </Reveal>
-          <Reveal delay={0.08}><p>{copy.services.intro}</p></Reveal>
-        </div>
-        <div className="service-grid">
-          {copy.services.items.map((item, index) => (
-            <Reveal className={`service-card ${index === 0 ? "recommended" : ""}`} delay={index * 0.08} key={item.number}>
-              {index === 0 && <img className="service-image" src={SITE_CONFIG.media.materials} srcSet={`${SITE_CONFIG.media.materialsSmall} 640w, ${SITE_CONFIG.media.materials} 1122w`} sizes="(max-width: 720px) calc(100vw - 96px), 52vw" width="1122" height="1402" alt={language === "zh" ? "暖白石材、胡桃木與天然布料材質組合" : "Warm white stone, walnut and natural linen material study"} loading="lazy" />}
-              <h3>{item.title}</h3>
-              <p className="service-problem">{item.problem}</p>
-              <p className="service-answer">{item.answer}</p>
-              <p className="service-price">{item.price}</p>
-            </Reveal>
-          ))}
-        </div>
-        <div className="service-footer">
-          <p>{copy.services.qualifier}</p>
-          <WhatsAppButton language={language} label={copy.whatsappShort} location="services" />
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function AboutSection({ copy }) {
-  return (
-    <section className="about-section section-block" id="about" aria-labelledby="about-title">
-      <div className="page-shell about-grid">
-        <Reveal className="about-portrait">
-          <MediaPlaceholder src={SITE_CONFIG.media.founder} label={copy.about.portrait} pending={copy.about.portraitPending} portrait />
-        </Reveal>
-        <Reveal className="about-copy" delay={0.08}>
-          <p className="eyebrow">{copy.about.eyebrow}</p>
-          <h2 id="about-title">{copy.about.title}</h2>
-          <p>{copy.about.body}</p>
-          <div className="location-line"><MapPin size={20} weight="fill" aria-hidden="true" /><span>{copy.about.location}</span></div>
-        </Reveal>
-      </div>
-    </section>
-  );
-}
-
-function BoundariesSection({ copy }) {
-  return (
-    <section className="boundaries-section section-block" id="boundaries" aria-labelledby="boundaries-title">
-      <div className="page-shell boundaries-panel">
-        <Reveal className="boundaries-heading">
-          <h2 id="boundaries-title">{copy.boundaries.title}</h2>
-          <img className="boundaries-material" src={SITE_CONFIG.media.boundaries} srcSet={`${SITE_CONFIG.media.boundariesSmall} 640w, ${SITE_CONFIG.media.boundaries} 1122w`} sizes="(max-width: 720px) 230px, 260px" width="1122" height="1402" alt={copy.boundaries.artAlt} loading="lazy" />
-        </Reveal>
-        <div className="boundary-list">
-          {copy.boundaries.items.map(([title, body], index) => (
-            <Reveal className="boundary-item" delay={index * 0.07} key={title}>
-              <span>0{index + 1}</span>
-              <div><h3>{title}</h3><p>{body}</p></div>
-            </Reveal>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function FaqSection({ copy }) {
-  const [openIndex, setOpenIndex] = useState(0);
-  const reduceMotion = useReducedMotion();
-  return (
-    <section className="faq-section section-block" id="faq" aria-labelledby="faq-title">
-      <div className="page-shell faq-grid">
-        <Reveal className="faq-heading">
-          <h2 id="faq-title">{copy.faq.title}</h2>
-        </Reveal>
-        <div className="faq-list">
-          {copy.faq.items.map(([question, answer], index) => {
-            const isOpen = index === openIndex;
-            const panelId = `faq-panel-${index}`;
-            return (
-              <Reveal className={`faq-item ${isOpen ? "open" : ""}`} delay={index * 0.05} key={question}>
-                <h3>
-                  <button type="button" onClick={() => setOpenIndex(isOpen ? -1 : index)} aria-expanded={isOpen} aria-controls={panelId}>
-                    <span>{question}</span>
-                    <CaretDown size={20} aria-hidden="true" />
-                  </button>
-                </h3>
-                <motion.div className="faq-answer" id={panelId} initial={false} animate={{ height: isOpen ? "auto" : 0, opacity: isOpen ? 1 : 0 }} transition={{ height: { duration: reduceMotion ? 0 : 0.32, ease: [0.16, 1, 0.3, 1] }, opacity: { duration: reduceMotion ? 0 : 0.2 } }} aria-hidden={!isOpen}>
-                  <div className="faq-answer-inner"><p>{answer}</p></div>
-                </motion.div>
-              </Reveal>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function FinalCta({ language, copy }) {
-  return (
-    <section className="final-cta" aria-labelledby="final-cta-title">
-      <div className="page-shell final-cta-grid">
-        <Reveal>
-          <p className="eyebrow light">{copy.finalCta.eyebrow}</p>
-          <h2 id="final-cta-title">{copy.finalCta.title}</h2>
-        </Reveal>
-        <Reveal className="final-cta-action" delay={0.08}>
-          <p>{copy.finalCta.body}</p>
-          <WhatsAppButton language={language} label={copy.whatsappShort} location="final_cta" />
-        </Reveal>
-      </div>
-    </section>
-  );
-}
-
-function Footer({ copy, onOpenQr }) {
-  const phoneContent = SITE_CONFIG.phoneDisplay || copy.footer.pending;
-  const emailContent = SITE_CONFIG.email || copy.footer.pending;
-  return (
-    <footer className="site-footer">
-      <div className="page-shell">
-        <div className="footer-main">
-          <div className="footer-brand"><strong>RNG</strong><span>{copy.brandTagline}</span></div>
-          <div className="footer-contacts">
-            <div>
-              <span><Phone size={17} aria-hidden="true" />{copy.footer.phone}</span>
-              {SITE_CONFIG.phoneHref ? <a href={`tel:${SITE_CONFIG.phoneHref}`}>{phoneContent}</a> : <em>{phoneContent}</em>}
-            </div>
-            <div>
-              <span><ChatCircleText size={17} aria-hidden="true" />{copy.footer.wechat}</span>
-              <button type="button" onClick={onOpenQr}>{SITE_CONFIG.wechatId || copy.footer.qr}</button>
-            </div>
-            <div>
-              <span>{copy.footer.email}</span>
-              {SITE_CONFIG.email ? <a href={`mailto:${SITE_CONFIG.email}`}>{emailContent}</a> : <em>{emailContent}</em>}
-            </div>
-          </div>
-        </div>
-        <div className="footer-meta">
-          <span>{SITE_CONFIG.companyName}</span>
-          <span>© 2026 RNG</span>
-          <a href="#top">{copy.footer.backToTop} ↑</a>
-        </div>
-        <div className="legal-row">
-          <details id="privacy"><summary>{copy.footer.privacy}</summary><p>{copy.footer.privacyText}</p></details>
-          <details id="terms"><summary>{copy.footer.terms}</summary><p>{copy.footer.termsText}</p></details>
-        </div>
-      </div>
-    </footer>
-  );
-}
-
-function WeChatModal({ open, onClose, copy }) {
-  const reduceMotion = useReducedMotion();
-  useEffect(() => {
-    if (!open) return undefined;
-    const onKeyDown = (event) => { if (event.key === "Escape") onClose(); };
-    document.body.classList.add("modal-open");
-    window.addEventListener("keydown", onKeyDown);
-    return () => {
-      document.body.classList.remove("modal-open");
-      window.removeEventListener("keydown", onKeyDown);
-    };
-  }, [open, onClose]);
-
-  return (
-    <AnimatePresence>
-      {open && (
-        <motion.div className="modal" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.2 }} role="dialog" aria-modal="true" aria-labelledby="wechat-title">
-          <button className="modal-backdrop" type="button" onClick={onClose} aria-label={copy.qrModal.close} />
-          <motion.div className="qr-panel" initial={reduceMotion ? false : { opacity: 0, y: 20, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 12, scale: 0.98 }} transition={{ duration: reduceMotion ? 0 : 0.2, ease: [0.16, 1, 0.3, 1] }}>
-            <div className="qr-panel-head"><h2 id="wechat-title">{copy.qrModal.title}</h2><button type="button" onClick={onClose} aria-label={copy.qrModal.close}><X size={22} /></button></div>
-            {SITE_CONFIG.wechatQr ? <img src={SITE_CONFIG.wechatQr} alt={`WeChat QR - ${SITE_CONFIG.wechatId}`} /> : <div className="qr-placeholder"><span>RNG</span><strong>{copy.qrModal.pending}</strong></div>}
-            <p>{SITE_CONFIG.wechatId || copy.qrModal.hint}</p>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
-}
-
-function StickyBar({ language, copy }) {
-  return (
-    <div className="mobile-sticky" role="region" aria-label={copy.footer.stickyLabel}>
-      <span>{copy.footer.stickyLabel}</span>
-      <WhatsAppButton language={language} label={copy.whatsappShort} location="mobile_sticky" compact />
+    const close = (event) => { if (event.key === "Escape") setMenuOpen(false); };
+    document.addEventListener("keydown", close);
+    return () => document.removeEventListener("keydown", close);
+  }, []);
+  return <header className="site-header">
+    <a className="brand" href="#top" aria-label="RNG home">RNG</a>
+    <nav className="desktop-nav" aria-label="Primary navigation">{copy.nav.map(([label, href]) => <a href={href} key={href}>{label}</a>)}</nav>
+    <div className="header-actions">
+      <button className="language-button" type="button" onClick={onToggleLanguage}>{copy.language}</button>
+      {SITE_CONFIG.bookingUrl && <a className="button button-small" href={SITE_CONFIG.bookingUrl} target="_blank" rel="noreferrer">{copy.book}</a>}
+      <button className="menu-button" type="button" aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} onClick={() => setMenuOpen((open) => !open)}>{menuOpen ? <X size={22} /> : <List size={23} />}</button>
     </div>
-  );
+    <AnimatePresence>{menuOpen && <motion.nav className="mobile-nav" aria-label="Mobile navigation" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
+      {copy.nav.map(([label, href]) => <a href={href} key={href} onClick={() => setMenuOpen(false)}>{label}</a>)}
+      <a href="#product" onClick={() => setMenuOpen(false)}>{copy.explore}</a>
+    </motion.nav>}</AnimatePresence>
+  </header>;
+}
+
+function Metric({ label, value, detail, compact = false }) {
+  return <div className={`metric ${compact ? "metric-compact" : ""}`}><span>{label}</span><strong>{value}</strong>{detail && <small>{detail}</small>}</div>;
+}
+
+function WorkspacePanel({ site, language, className = "" }) {
+  const copy = TEXT[language];
+  const variance = (site.revenue - site.forecast) / site.forecast;
+  return <div className={`workspace-panel ${className}`}>
+    <div className="workspace-head"><div><span>{copy.workspace.title}</span><strong>{siteName(site, language)}</strong></div><SampleLabel>{copy.sample}</SampleLabel></div>
+    <div className="workspace-primary">
+      <div><span>{copy.workspace.revenue}</span><strong>{currency.format(site.revenue)}</strong><small className={variance >= 0 ? "positive" : "negative"}>{percent.format(variance)} {variance >= 0 ? copy.workspace.varianceAhead : copy.workspace.belowForecast}</small></div>
+      <SparkBars values={REVENUE_CURVES[site.id]} label={`${site.name} sample revenue curve`} />
+    </div>
+    <div className="workspace-metrics"><Metric label={copy.workspace.forecast} value={currency.format(site.forecast)} compact /><Metric label={copy.workspace.labour} value={currency.format(site.labourCost)} compact /><Metric label={copy.workspace.gp} value={currency.format(site.grossProfit)} compact /></div>
+    <div className="workspace-alerts"><div><Warning size={17} weight="fill" /><span>{site.stockAlerts} {copy.workspace.alerts}</span></div><div><CheckCircle size={17} weight="fill" /><span>{site.approvals} {copy.workspace.approvals}</span></div><small>{site.orders.toLocaleString("en-GB")} {copy.workspace.orders}</small></div>
+  </div>;
+}
+
+function Hero({ site, language }) {
+  const copy = TEXT[language];
+  return <section className="hero" id="top" aria-labelledby="hero-title">
+    <div className="hero-copy"><SampleLabel>{copy.concept}</SampleLabel><motion.h1 id="hero-title" initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}>{copy.hero.title}</motion.h1><p>{copy.hero.body}</p><div className="hero-actions"><a className="button" href="#product">{copy.explore}<ArrowDown size={18} /></a>{SITE_CONFIG.bookingUrl && <a className="text-link" href={SITE_CONFIG.bookingUrl} target="_blank" rel="noreferrer">{copy.book}<ArrowUpRight size={18} /></a>}</div></div>
+    <motion.div className="hero-visual" initial={{ opacity: 0, scale: 0.98 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.85, delay: 0.12, ease: [0.16, 1, 0.3, 1] }}><img src="/images/generated/rng-operations-manager.webp" alt={copy.hero.imageAlt} width="1586" height="1024" /><WorkspacePanel site={site} language={language} className="hero-workspace" /></motion.div>
+  </section>;
+}
+
+function SiteSelector({ selectedSite, onSelect, language }) {
+  const copy = TEXT[language];
+  return <div className="site-selector" role="group" aria-label={copy.workspace.selector}>{DEMO_SITES.map((site) => <button type="button" key={site.id} className={site.id === selectedSite.id ? "active" : ""} aria-pressed={site.id === selectedSite.id} onClick={() => onSelect(site)}>{siteName(site, language)}</button>)}</div>;
+}
+
+function OperationsOverview({ site, setSite, language }) {
+  const copy = TEXT[language];
+  return <section className="section section-overview" id="product" aria-labelledby="overview-title"><div className="section-shell">
+    <div className="section-heading compact-heading"><Reveal><h2 id="overview-title">{copy.workspace.live}</h2></Reveal><SiteSelector selectedSite={site} onSelect={setSite} language={language} /></div>
+    <Reveal className="overview-board"><WorkspacePanel site={site} language={language} className="overview-workspace" /><div className="overview-insights"><div className="insight-main"><Gauge size={25} weight="duotone" /><span>{copy.workspace.gp}</span><strong>{percent.format(site.grossProfit / site.revenue)}</strong><small>{siteName(site, language)}</small></div><div className="insight-pair"><Metric label={copy.workspace.alerts} value={String(site.stockAlerts).padStart(2, "0")} detail={language === "zh" ? "需要店舖跟進" : "Need site action"} /><Metric label={copy.workspace.approvals} value={String(site.approvals).padStart(2, "0")} detail={language === "zh" ? "等待負責人" : "Awaiting owners"} /></div></div></Reveal>
+  </div></section>;
+}
+
+function ConnectedLoop({ language }) {
+  const copy = TEXT[language];
+  const [active, setActive] = useState("forecast");
+  const Icon = LOOP_ICONS[active];
+  const [title, body] = copy.loop.details[active];
+  return <section className="section loop-section" aria-labelledby="loop-title"><div className="section-shell loop-layout">
+    <div className="loop-copy"><Reveal><h2 id="loop-title">{copy.loop.title}</h2></Reveal><Reveal delay={0.05}><p>{copy.loop.body}</p></Reveal></div>
+    <Reveal className="loop-console"><div className="loop-rail" role="tablist" aria-label={copy.loop.title}>{LOOP_STEPS.map((step) => { const StepIcon = LOOP_ICONS[step]; return <button key={step} type="button" role="tab" aria-selected={active === step} className={active === step ? "active" : ""} onClick={() => setActive(step)}><StepIcon size={20} /><span>{copy.loop.labels[step]}</span></button>; })}</div>
+      <AnimatePresence mode="wait"><motion.div className="loop-detail" key={`${language}-${active}`} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.22 }}><div className="loop-icon"><Icon size={30} weight="duotone" /></div><span>{copy.loop.labels[active]}</span><h3>{title}</h3><p>{body}</p><div className="loop-line"><i /><Check size={17} weight="bold" /></div></motion.div></AnimatePresence>
+    </Reveal>
+  </div></section>;
+}
+
+function ModulePreview({ module, copy }) {
+  if (module === "forecast") return <SparkBars values={[42, 55, 48, 71, 68, 82, 76, 91]} label="Sample forecast" />;
+  if (module === "workforce") return <div className="mini-shifts"><i /><i /><i /></div>;
+  if (module === "inventory") return <div className="mini-stock"><span>82%</span><span>64%</span><span>91%</span></div>;
+  if (module === "finance") return <div className="mini-match"><CheckCircle size={22} weight="fill" /><span>{copy.workspace.live}</span></div>;
+  if (module === "crm") return <div className="mini-segments"><span>2+ visits</span><span>Local</span></div>;
+  return <div className="mini-calendar"><CalendarBlank size={26} /><span>12</span><span>18</span><span>22</span></div>;
+}
+
+function PlatformModules({ language }) {
+  const copy = TEXT[language];
+  const [activeModule, setActiveModule] = useState("forecast");
+  return <section className="section modules-section" aria-labelledby="modules-title"><div className="section-shell"><div className="section-heading"><Reveal><h2 id="modules-title">{copy.platform.title}</h2></Reveal><Reveal delay={0.05}><p>{copy.platform.body}</p></Reveal></div><div className="module-grid">
+    {MODULES.map((module, index) => { const Icon = MODULE_ICONS[module.id]; const [title, body] = copy.platform.items[module.id]; return <Reveal className={`module-wrap module-${module.size}`} delay={index * 0.035} key={module.id}><button type="button" className={`module-card ${activeModule === module.id ? "active" : ""}`} aria-pressed={activeModule === module.id} onClick={() => setActiveModule(module.id)}><div className="module-top"><Icon size={24} weight="duotone" /><span>{copy.platform.open}</span></div><div><h3>{title}</h3><p>{body}</p></div><ModulePreview module={module.id} copy={copy} /></button></Reveal>; })}
+  </div></div></section>;
+}
+
+function ForecastSimulator({ site, language }) {
+  const copy = TEXT[language];
+  const [periodIndex, setPeriodIndex] = useState(0);
+  const [promotion, setPromotion] = useState("none");
+  const [weather, setWeather] = useState("dry");
+  const [footfall, setFootfall] = useState(0);
+  const result = useMemo(() => {
+    const periodMultiplier = [1, 2, 5][periodIndex];
+    const promoMultiplier = { none: 1, standard: 1.07, major: 1.16 }[promotion];
+    const weatherMultiplier = { dry: 1, rain: 0.94, hot: 1.05 }[weather];
+    const multiplier = promoMultiplier * weatherMultiplier * (1 + footfall / 100);
+    const revenue = site.forecast * periodMultiplier * multiplier;
+    return { revenue, labour: Math.round(revenue / 42), stock: Math.round(revenue / 6.8), variance: multiplier - 1 };
+  }, [footfall, periodIndex, promotion, site.forecast, weather]);
+  return <section className="section simulator-section" id="forecast" aria-labelledby="simulator-title"><div className="section-shell simulator-layout">
+    <div className="simulator-copy"><SampleLabel>{copy.sample}</SampleLabel><Reveal><h2 id="simulator-title">{copy.simulator.title}</h2></Reveal><Reveal delay={0.05}><p>{copy.simulator.body}</p></Reveal><div className="control-grid">
+      <label><span>{copy.simulator.period}</span><select value={periodIndex} onChange={(event) => setPeriodIndex(Number(event.target.value))}>{copy.simulator.periods.map((label, index) => <option value={index} key={label}>{label}</option>)}</select></label>
+      <label><span>{copy.simulator.promotion}</span><select value={promotion} onChange={(event) => setPromotion(event.target.value)}>{Object.entries(copy.simulator.promotions).map(([value, label]) => <option value={value} key={value}>{label}</option>)}</select></label>
+      <label><span>{copy.simulator.weather}</span><select value={weather} onChange={(event) => setWeather(event.target.value)}>{Object.entries(copy.simulator.weatherOptions).map(([value, label]) => <option value={value} key={value}>{label}</option>)}</select></label>
+      <label className="range-control"><span>{copy.simulator.footfall}<strong>{footfall > 0 ? `+${footfall}%` : `${footfall}%`}</strong></span><input type="range" min="-15" max="25" step="5" value={footfall} onChange={(event) => setFootfall(Number(event.target.value))} /></label>
+    </div></div>
+    <Reveal className="simulator-results" delay={0.08}><div className="result-hero"><span>{copy.simulator.projectedRevenue}</span><motion.strong key={Math.round(result.revenue)} initial={{ opacity: 0 }} animate={{ opacity: 1 }}>{currency.format(result.revenue)}</motion.strong><small className={result.variance >= 0 ? "positive" : "negative"}>{percent.format(result.variance)} {copy.simulator.variance}</small></div><SparkBars values={REVENUE_CURVES[site.id].map((value) => value * (1 + result.variance))} label="Scenario revenue curve" /><div className="result-grid"><Metric label={copy.simulator.labourHours} value={`${result.labour}h`} compact /><Metric label={copy.simulator.stockUnits} value={result.stock.toLocaleString("en-GB")} compact /></div><p className="caveat"><LockKey size={16} />{copy.simulator.caveat}</p></Reveal>
+  </div></section>;
+}
+
+function RotaDemo({ language }) {
+  const copy = TEXT[language];
+  const [status, setStatus] = useState("proposed");
+  const statusOrder = ["proposed", "approved", "published"];
+  return <section className="section rota-section" id="workforce" aria-labelledby="rota-title"><div className="section-shell rota-layout">
+    <div className="rota-heading"><Reveal><h2 id="rota-title">{copy.rota.title}</h2></Reveal><Reveal delay={0.05}><p>{copy.rota.body}</p></Reveal><div className="status-switch" role="group" aria-label="Rota status">{statusOrder.map((item) => <button type="button" key={item} className={status === item ? "active" : ""} aria-pressed={status === item} onClick={() => setStatus(item)}>{copy.rota.statuses[item]}</button>)}</div><AnimatePresence mode="wait"><motion.div className={`status-note status-${status}`} key={`${language}-${status}`} initial={{ opacity: 0, y: 5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>{status === "published" ? <CheckCircle size={20} weight="fill" /> : <Clock size={20} weight="fill" />}<span>{copy.rota.stateCopy[status]}</span></motion.div></AnimatePresence></div>
+    <Reveal className="rota-board" delay={0.08}><div className="rota-summary"><Metric label={copy.rota.demand} value="98%" compact /><Metric label={copy.rota.budget} value="£4,520" compact /><Metric label={copy.rota.scheduled} value="£4,380" compact /></div><div className="rota-time"><span>08</span><span>12</span><span>16</span><span>20</span></div><div className="shift-list">{ROTA_SHIFTS.map((shift) => <div className="shift-row" key={shift.name}><div><strong>{shift.name}</strong><span>{shift.role}</span></div><div className="shift-track"><motion.i className={shift.tone} initial={{ scaleX: 0 }} whileInView={{ scaleX: 1 }} viewport={{ once: true }} style={{ left: `${((shift.start - 8) / 13) * 100}%`, width: `${((shift.end - shift.start) / 13) * 100}%` }} /></div><span>{shift.start}:00</span></div>)}</div></Reveal>
+  </div></section>;
+}
+
+function ReportTable({ copy }) {
+  return <div className="report-table"><div className="report-row report-header"><span /><span>{copy.reports.actual}</span><span>{copy.reports.budget}</span><span>{copy.reports.variance}</span></div>{PNL_ROWS.map((row) => { const variance = row.actual - row.budget; return <div className={`report-row ${row.key === "grossProfit" || row.key === "operatingContribution" ? "total" : ""}`} key={row.key}><strong>{copy.reports.labels[row.key]}</strong><span>{currency.format(row.actual)}</span><span>{currency.format(row.budget)}</span><span className={variance >= 0 ? "positive" : "negative"}>{currency.format(variance)}</span></div>; })}</div>;
+}
+
+function InsightList({ items }) {
+  return <div className="report-insights">{items.map(([label, value, note]) => <div key={label}><span>{label}</span><strong>{value}</strong><p>{note}</p></div>)}</div>;
+}
+
+function MonthlyReports({ language }) {
+  const copy = TEXT[language];
+  const [tab, setTab] = useState("pnl");
+  return <section className="section reports-section" id="reports" aria-labelledby="reports-title"><div className="section-shell"><div className="section-heading"><Reveal><h2 id="reports-title">{copy.reports.title}</h2></Reveal><Reveal delay={0.05}><p>{copy.reports.body}</p></Reveal></div><Reveal className="report-frame">
+    <div className="report-sidebar"><div><FileText size={24} weight="duotone" /><span>{copy.reports.preview}</span></div><strong>{copy.reports.month}</strong><SampleLabel>{copy.sample}</SampleLabel><div className="report-tabs" role="tablist" aria-label={copy.reports.preview}>{Object.entries(copy.reports.tabs).map(([id, label]) => <button role="tab" type="button" key={id} aria-selected={tab === id} className={tab === id ? "active" : ""} onClick={() => setTab(id)}>{label}</button>)}</div></div>
+    <div className="report-content"><AnimatePresence mode="wait"><motion.div key={`${language}-${tab}`} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }}>{tab === "pnl" && <ReportTable copy={copy} />}{tab === "operations" && <InsightList items={copy.reports.operations} />}{tab === "growth" && <InsightList items={copy.reports.growth} />}</motion.div></AnimatePresence><div className="variance-note"><Sparkle size={19} weight="fill" /><p>{copy.reports.explanation}</p></div></div>
+  </Reveal></div></section>;
+}
+
+function MarketingCms({ language }) {
+  const copy = TEXT[language];
+  const [device, setDevice] = useState("desktop");
+  return <section className="section marketing-section" id="marketing" aria-labelledby="marketing-title"><div className="section-shell marketing-layout">
+    <div className="marketing-copy"><Reveal><h2 id="marketing-title">{copy.marketing.title}</h2></Reveal><Reveal delay={0.05}><p>{copy.marketing.body}</p></Reveal><div className="campaign-brief"><Megaphone size={24} weight="duotone" /><div><span>{copy.marketing.objective}</span><strong>{copy.marketing.campaign}</strong></div><dl><div><dt>{copy.marketing.budget}</dt><dd>£2,400</dd></div><div><dt>{copy.marketing.audience}</dt><dd>1,840</dd></div></dl></div><div className="content-calendar"><span>{copy.marketing.calendar}</span><div>{CONTENT_CALENDAR.map((item) => <article key={`${item.day}-${item.channel}`}><strong>{item.day}</strong><span>{item.channel}</span><small>{copy.marketing.statuses[item.status]}</small></article>)}</div></div></div>
+    <Reveal className="cms-board" delay={0.08}><div className="cms-head"><span>{copy.marketing.website}</span><div role="group" aria-label="Preview device"><button type="button" aria-pressed={device === "desktop"} className={device === "desktop" ? "active" : ""} onClick={() => setDevice("desktop")}><Desktop size={17} />{copy.marketing.desktop}</button><button type="button" aria-pressed={device === "mobile"} className={device === "mobile" ? "active" : ""} onClick={() => setDevice("mobile")}><DeviceMobile size={17} />{copy.marketing.mobile}</button></div></div><div className={`website-preview ${device}`}><div className="preview-nav"><strong>HARBOUR</strong><span>Menu&nbsp;&nbsp;Locations</span></div><div className="preview-hero"><span>{copy.marketing.campaign}</span><h3>{copy.marketing.previewTitle}</h3><p>{copy.marketing.previewBody}</p><button type="button">{copy.marketing.previewCta}</button></div></div><div className="readiness-list"><strong>{copy.marketing.checklist}</strong><div>{copy.marketing.checks.map((check) => <span key={check}><Check size={15} weight="bold" />{check}</span>)}</div></div></Reveal>
+  </div></section>;
+}
+
+function RolesSection({ language }) {
+  const copy = TEXT[language];
+  return <section className="section roles-section" aria-labelledby="roles-title"><div className="section-shell roles-layout"><Reveal className="roles-copy"><h2 id="roles-title">{copy.roles.title}</h2><p>{copy.roles.body}</p><div>{copy.roles.items.map((item) => <span key={item}>{item}</span>)}</div></Reveal><div className="role-images"><Reveal><img src="/images/references/past-uk-glasgow-matcha-counter.webp" alt={copy.roles.imageAltOne} loading="lazy" width="1280" height="960" /></Reveal><Reveal delay={0.08}><img src="/images/references/past-uk-glasgow-matcha-frontage.webp" alt={copy.roles.imageAltTwo} loading="lazy" width="1280" height="960" /></Reveal></div></div></section>;
+}
+
+function Faq({ language }) {
+  const copy = TEXT[language];
+  const [open, setOpen] = useState("concept");
+  return <section className="section faq-section" id="faq" aria-labelledby="faq-title"><div className="section-shell faq-layout"><Reveal><h2 id="faq-title">{copy.faq.title}</h2></Reveal><div className="faq-list">{FAQ_KEYS.map((key) => { const [question, answer] = copy.faq.items[key]; const isOpen = open === key; return <article className={isOpen ? "open" : ""} key={key}><h3><button type="button" aria-expanded={isOpen} aria-controls={`faq-${key}`} onClick={() => setOpen(isOpen ? "" : key)}><span>{question}</span><CaretDown size={20} /></button></h3><AnimatePresence initial={false}>{isOpen && <motion.div id={`faq-${key}`} initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} exit={{ opacity: 0, height: 0 }}><p>{answer}</p></motion.div>}</AnimatePresence></article>; })}</div></div></section>;
+}
+
+function FinalCta({ language }) {
+  const copy = TEXT[language];
+  return <section className="final-cta" aria-labelledby="final-title"><div className="section-shell"><SampleLabel>{copy.concept}</SampleLabel><h2 id="final-title">{copy.final.title}</h2><p>{copy.final.body}</p><a className="button button-light" href="#product">{copy.explore}<ArrowUpRight size={18} /></a></div></section>;
+}
+
+function Footer({ language }) {
+  const copy = TEXT[language];
+  return <footer className="site-footer"><div className="section-shell footer-main"><div><strong>RNG</strong><span>{copy.footer.statement}</span></div><p>{copy.footer.disclaimer}</p><a href="#top">{copy.footer.back}<ArrowUpRight size={16} /></a></div></footer>;
 }
 
 function App() {
-  const language = "en";
-  const [qrOpen, setQrOpen] = useState(false);
-  const [mediaReady, setMediaReady] = useState(false);
-  const [loaderVisible, setLoaderVisible] = useState(true);
-  const heroRef = useRef(null);
-  const { scrollYProgress: heroScrollProgress } = useScroll({ target: heroRef, offset: ["start start", "end end"] });
-  const motionProfile = useResponsiveMotionProfile();
-  const copy = COPY.en;
-
+  const [language, setLanguage] = useState("en");
+  const [site, setSite] = useState(DEMO_SITES[0]);
+  const copy = TEXT[language];
   useEffect(() => {
-    document.documentElement.lang = "en-GB";
+    document.documentElement.lang = language === "zh" ? "zh-HK" : "en-GB";
     document.title = copy.pageTitle;
     const description = document.querySelector('meta[name="description"]');
     if (description) description.setAttribute("content", copy.pageDescription);
-  }, [copy]);
-
-  useEffect(() => {
-    if (!loaderVisible) return undefined;
-    document.body.classList.add("loading");
-    const safety = window.setTimeout(() => setMediaReady(true), 5000);
-    return () => {
-      document.body.classList.remove("loading");
-      window.clearTimeout(safety);
-    };
-  }, [loaderVisible]);
-
-  return (
-    <ResponsiveMotionContext.Provider value={motionProfile}>
-      <AnimatePresence>{loaderVisible && <Loader ready={mediaReady} onComplete={() => setLoaderVisible(false)} />}</AnimatePresence>
-      <a className="skip-link" href="#main">{copy.skip}</a>
-      <Header language={language} copy={copy} heroScrollProgress={heroScrollProgress} />
-      <main id="main">
-        <Hero copy={copy} onVideoReady={() => setMediaReady(true)} sectionRef={heroRef} scrollYProgress={heroScrollProgress} />
-        <CaseStudy copy={copy} />
-        <PastReferences copy={copy} />
-        <ProcessSection language={language} copy={copy} />
-        <ServicesSection language={language} copy={copy} />
-        <AboutSection copy={copy} />
-        <BoundariesSection copy={copy} />
-        <FaqSection copy={copy} />
-        <FinalCta language={language} copy={copy} />
-      </main>
-      <div id="contact"><Footer copy={copy} onOpenQr={() => setQrOpen(true)} /></div>
-      <StickyBar language={language} copy={copy} />
-      <WeChatModal open={qrOpen} onClose={() => setQrOpen(false)} copy={copy} />
-    </ResponsiveMotionContext.Provider>
-  );
+  }, [copy.pageDescription, copy.pageTitle, language]);
+  return <><a className="skip-link" href="#main">{copy.skip}</a><Header language={language} onToggleLanguage={() => setLanguage((value) => value === "en" ? "zh" : "en")} /><main id="main"><Hero site={site} language={language} /><OperationsOverview site={site} setSite={setSite} language={language} /><ConnectedLoop language={language} /><PlatformModules language={language} /><ForecastSimulator site={site} language={language} /><RotaDemo language={language} /><MonthlyReports language={language} /><MarketingCms language={language} /><RolesSection language={language} /><Faq language={language} /><FinalCta language={language} /></main><Footer language={language} /></>;
 }
 
-createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-);
+createRoot(document.getElementById("root")).render(<React.StrictMode><App /></React.StrictMode>);
